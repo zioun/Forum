@@ -6,6 +6,9 @@ import Register from './../pages/Register/Register';
 import Dashboard from "../layout/Dashboard";
 import MyProfile from "../dashboard/MyProfile";
 import AddPost from "../dashboard/AddPost";
+import MyPosts from "../dashboard/MyPosts";
+import Details from './../pages/details/Details';
+import AllComments from "../dashboard/AllComments";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home></Home>,
+      },
+      {
+        path: "/details/:id",
+        element: <Details></Details>,
       },
       {
         path: "/login",
@@ -37,6 +44,14 @@ export const router = createBrowserRouter([
       {
         path: "add-post",
         element: <AddPost></AddPost>,
+      },
+      {
+        path: "my-post",
+        element: <MyPosts></MyPosts>,
+      },
+      {
+        path: "all-comments/:id",
+        element: <AllComments></AllComments>,
       },
     ],
   },

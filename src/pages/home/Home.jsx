@@ -2,19 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import Banner from "../../components/Banner";
 import Sidebar from "../../components/Sidebar";
 import PostItem from "../../components/PostItem";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosPublic from './../../hooks/useAxiosPublic';
 
 const Home = () => {
-  const [getPost, setPost] = useState([]);
-
-  useEffect(() => {
-    reqgetData();
-  }, []);
-
-  const reqgetData = async () => {
-    const { data } = await axios(`http://localhost:5000/posts`);
-    setPost(data);
-  };
+  const axiosPublic = useAxiosPublic();
+  const { data: getPost = [] } = useQuery({
+    queryKey: ["getPost"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`http://localhost:5000/posts`);
+      return data;
+    },
+  });
   console.log(getPost)
   return (
     <div>

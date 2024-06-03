@@ -1,22 +1,34 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Link } from 'react-router-dom';
+import useAxiosPublic from "../hooks/useAxiosPublic";
+import { useQuery } from "@tanstack/react-query";
 
 const AddPost = () => {
-  const {user} = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
+
+  const axiosPublic = useAxiosPublic();
+  const { data: posts = [] } = useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`http://localhost:5000/posts`);
+      const filteredData = data.filter(
+        (item) => item.author.email === user.email
+      );
+      return filteredData;
+    },
+  });
+
   const handlePost = async (e) => {
     e.preventDefault();
     const form = e.target;
     const title = form.title.value;
     const category = form.category.value;
     const description = form.description.value;
-    if (
-      title === "" ||
-      category === "" ||
-      description === ""
-    ) {
+    if (title === "" || category === "" || description === "") {
       return toast.error("Input Can't be empty");
     }
     const postData = {
@@ -24,7 +36,7 @@ const AddPost = () => {
       category,
       description,
       date: new Date(),
-      award: 'bronze',
+      award: "bronze",
       upVote: 0,
       downVote: 0,
       author: {
@@ -51,7 +63,7 @@ const AddPost = () => {
   };
   return (
     <div>
-        <Toaster />
+      <Toaster />
       <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 mt-5 border">
         <h2 className="text-lg font-semibold text-gray-700 capitalize dark:text-white">
           Add Post
@@ -111,9 +123,17 @@ const AddPost = () => {
           </div>
 
           <div className="flex justify-end mt-6">
-            <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
-              Post
-            </button>
+            {posts.length > 5 ? (
+              <Link to="/">
+                <span className="tooltip px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600" data-tip="hello asdfasdfasdf adsfasdfa sdfa adsf asdf ">
+                  Become a Member
+                </span>
+              </Link>
+            ) : (
+              <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
+                Post
+              </button>
+            )}
           </div>
         </form>
       </section>

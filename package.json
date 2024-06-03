@@ -13,6 +13,7 @@
     "@formatjs/intl-locale": "^4.0.0",
     "@formatjs/intl-pluralrules": "^5.2.14",
     "@formatjs/intl-relativetimeformat": "^11.2.14",
+    "@tanstack/react-query": "^5.40.0",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "javascript-time-ago": "^2.5.10",
@@ -25,7 +26,8 @@
     "react-select": "^5.8.0",
     "react-time-ago": "^7.3.3",
     "sort-by": "^1.2.0",
-    "sweetalert2": "^11.11.0"
+    "sweetalert2": "^11.11.0",
+    "tanstack-query": "^1.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
