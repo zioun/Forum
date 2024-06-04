@@ -9,6 +9,9 @@ import AddPost from "../dashboard/AddPost";
 import MyPosts from "../dashboard/MyPosts";
 import Details from './../pages/details/Details';
 import AllComments from "../dashboard/AllComments";
+import AdminProfile from "../dashboard/AdminProfile";
+import Activities from "../dashboard/Activities";
+import Announcement from "../dashboard/Announcement";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +55,18 @@ export const router = createBrowserRouter([
       {
         path: "all-comments/:id",
         element: <AllComments></AllComments>,
+      },
+      {
+        path: "admin-profile",
+        element: <AdminProfile></AdminProfile>,
+      },
+      {
+        path: "activities",
+        element: <Activities></Activities>,
+      },
+      {
+        path: "announcement",
+        element: <Announcement></Announcement>,
       },
     ],
   },
