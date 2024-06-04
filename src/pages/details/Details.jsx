@@ -1,8 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { AuthContext } from "../../providers/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 
@@ -11,7 +11,7 @@ const Details = () => {
   const [comment, setComment] = useState("");
   const axiosPublic = useAxiosPublic();
   const { id } = useParams();
-  const [comments, setComments] = useState([]);
+  const queryClient = useQueryClient();
 
   //post comment
   const handleComment = async (e) => {
@@ -36,56 +36,50 @@ const Details = () => {
       toast.success("Thanks for your comment");
       setComment("");
       form.reset();
-      // Fetch updated comments after posting a comment
-      fetchComments();
+      // Invalidate and refetch comments after posting a comment
+      queryClient.invalidateQueries({ queryKey: ["comments", id] });
     } catch (err) {
       console.log(err);
     }
   };
 
   // Fetch comments
-  const fetchComments = async () => {
-    try {
+  const { data: comments, isLoading: commentsLoading, error: commentsError } = useQuery({
+    queryKey: ["comments", id],
+    queryFn: async () => {
       const { data } = await axiosPublic.get(`/comments/`);
-      const sortedData = data.sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-      );
-      setComments(sortedData);
-    } catch (err) {
-      console.log(err);
+      return data.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
-  };
-
-  useEffect(() => {
-    fetchComments();
-  }, []);
-
-  // Filter comments based on postId
-  const filteredComments = comments.filter((comment) => comment.postId === id);
+  });
 
   // get post data by id
   const {
     data: post,
-    isLoading,
-    error,
+    isLoading: postLoading,
+    error: postError,
   } = useQuery({
     queryKey: ["post", id],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(
-        `http://localhost:5000/posts/${id}`
-      );
+      const { data } = await axiosPublic.get(`http://localhost:5000/posts/${id}`);
       console.log("Fetched post data:", data);
       return data;
-    },
+    }
   });
 
-  if (isLoading) {
+  if (postLoading || commentsLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  if (postError) {
+    return <div>Error: {postError.message}</div>;
   }
+
+  if (commentsError) {
+    return <div>Error: {commentsError.message}</div>;
+  }
+
+  // Filter comments based on postId
+  const filteredComments = comments.filter((comment) => comment.postId === id);
 
   // Ensure post is defined before accessing its properties
   const timeAgo = post
@@ -139,7 +133,7 @@ const Details = () => {
                   <h1>{post.downVote}</h1>
                 </div>
                 <div className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer">
-                  <h1>25</h1>
+                  <h1>{filteredComments.length}</h1>
                 </div>
                 <div className="object-cover w-5">
                   <img

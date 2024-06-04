@@ -14,6 +14,7 @@ const AllComments = () => {
   const [comments, setComments] = useState([]);
   const [selectedComment, setSelectedComment] = useState(""); // State to hold the selected comment
   const [selectedOptions, setSelectedOptions] = useState({}); // State to hold selected options for each comment
+  const [disabledButtons, setDisabledButtons] = useState({}); // State to hold disabled state of report buttons
 
   // Fetch comments
   const fetchComments = async () => {
@@ -75,6 +76,12 @@ const AllComments = () => {
 
   // Handle report button click
   const handleReportClick = async (comment) => {
+    const feedback = selectedOptions[comment._id];
+    if (!feedback) {
+      toast.error("Please select feedback before reporting.");
+      return;
+    }
+
     try {
       const response = await axiosPublic.post("/reports", {
         commentId: comment._id,
@@ -82,10 +89,16 @@ const AllComments = () => {
         postId: comment.postId,
         date: comment.date,
         commenter: comment.commenter,
+        feedback: feedback, // Correctly use selected feedback
       });
-      window.location.reload();
       toast.success("Reported successfully!");
       console.log("Report response:", response.data);
+
+      // Disable the report button for the reported comment
+      setDisabledButtons((prevDisabledButtons) => ({
+        ...prevDisabledButtons,
+        [comment._id]: true,
+      }));
     } catch (err) {
       console.error(err);
       toast.error("Failed to report.");
@@ -174,6 +187,7 @@ const AllComments = () => {
                           handleOptionChange(comment._id, event)
                         }
                         className="select select-bordered w-full max-w-xs"
+                        name="feedback"
                       >
                         <option value={""} disabled>
                           Feedback
@@ -184,7 +198,10 @@ const AllComments = () => {
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-800">
                       <button
-                        disabled={!selectedOptions[comment._id]}
+                        disabled={
+                          !selectedOptions[comment._id] ||
+                          disabledButtons[comment._id]
+                        }
                         className="btn"
                         onClick={() => handleReportClick(comment)}
                       >
