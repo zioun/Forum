@@ -5,6 +5,12 @@ import { AuthContext } from "../../providers/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
+import {
+  FacebookShareButton,
+  TelegramShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
 
 const Details = () => {
   const { user } = useContext(AuthContext);
@@ -44,12 +50,16 @@ const Details = () => {
   };
 
   // Fetch comments
-  const { data: comments, isLoading: commentsLoading, error: commentsError } = useQuery({
+  const {
+    data: comments,
+    isLoading: commentsLoading,
+    error: commentsError,
+  } = useQuery({
     queryKey: ["comments", id],
     queryFn: async () => {
       const { data } = await axiosPublic.get(`/comments/`);
       return data.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
+    },
   });
 
   // get post data by id
@@ -60,10 +70,12 @@ const Details = () => {
   } = useQuery({
     queryKey: ["post", id],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(`http://localhost:5000/posts/${id}`);
+      const { data } = await axiosPublic.get(
+        `http://localhost:5000/posts/${id}`
+      );
       console.log("Fetched post data:", data);
       return data;
-    }
+    },
   });
 
   if (postLoading || commentsLoading) {
@@ -85,6 +97,10 @@ const Details = () => {
   const timeAgo = post
     ? formatDistanceToNow(new Date(post.date), { addSuffix: true })
     : "Unknown date";
+
+  // Define shareUrl and shareTitle
+  const shareUrl = `${window.location.href}`;
+  const shareTitle = post?.title || "Check this out!";
 
   return (
     <div>
@@ -127,9 +143,9 @@ const Details = () => {
               </div>
               <div className="mt-7 flex gap-3">
                 <div className="flex gap-1 bg-[#E5EBEE] p-1 px-3 rounded-full">
-                  <button className="hover:text-[#D93900]"></button>
+                  <button className="hover:text-[#D93900]">up</button>
                   <h4>{post.upVote}</h4>
-                  <button className="hover:text-[#6A5CFF]"></button>
+                  <button className="hover:text-[#6A5CFF]">down</button>
                   <h1>{post.downVote}</h1>
                 </div>
                 <div className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer">
@@ -142,8 +158,35 @@ const Details = () => {
                     alt="Medal"
                   />
                 </div>
-                <div className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer">
-                  <h1>Share</h1>
+                <div className="dropdown">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer justify-center items-center"
+                  >
+                    Share
+                  </div>
+                  <div
+                    tabIndex={0}
+                    className="dropdown-content z-[1] card card-compact shadow bg-[#E5EBEE] text-primary-content mt-3"
+                  >
+                    <div className="card-body">
+                      <div className="flex justify-between flex-col gap-5 border">
+                        <FacebookShareButton url={shareUrl} quote={shareTitle}>
+                          Facebook
+                        </FacebookShareButton>
+                        <TwitterShareButton url={shareUrl} title={shareTitle}>
+                          Twitter
+                        </TwitterShareButton>
+                        <TelegramShareButton url={shareUrl} title={shareTitle}>
+                          Telegram
+                        </TelegramShareButton>
+                        <WhatsappShareButton url={shareUrl} title={shareTitle}>
+                          Whatsapp
+                        </WhatsappShareButton>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>

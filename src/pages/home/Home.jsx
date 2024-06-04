@@ -3,6 +3,8 @@ import Sidebar from "../../components/Sidebar";
 import PostItem from "../../components/PostItem";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../../hooks/useAxiosPublic";
+import ReactPaginate from 'react-paginate';
+import './pagination.css';
 
 const Home = () => {
   const axiosPublic = useAxiosPublic();
@@ -15,7 +17,9 @@ const Home = () => {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredPosts, setFilteredPosts] = useState(getPost);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     setFilteredPosts(
@@ -23,11 +27,21 @@ const Home = () => {
         post.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
+    setCurrentPage(0); // Reset to the first page after filtering
   }, [searchQuery, getPost]);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
+
+  const handlePageClick = (data) => {
+    setCurrentPage(data.selected);
+  };
+
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = currentPage * itemsPerPage;
+  const currentItems = filteredPosts.slice(indexOfFirstItem, indexOfLastItem);
+  const pageCount = Math.ceil(filteredPosts.length / itemsPerPage);
 
   return (
     <div>
@@ -72,7 +86,7 @@ const Home = () => {
         </div>
         <div className="px-20 w-full">
           <div className="border-t mb-5">
-            {filteredPosts.length === 0 ? (
+            {currentItems.length === 0 ? (
               <div className="flex justify-center">
                 <img
                   className=""
@@ -81,60 +95,37 @@ const Home = () => {
                 />
               </div>
             ) : (
-              filteredPosts.map((post) => (
+              currentItems.map((post) => (
                 <PostItem key={post._id} getPost={post} />
               ))
             )}
           </div>
-          <div className="flex justify-center pb-5">
-            <a
-              href="#"
-              className="flex items-center justify-center px-4 py-2 mx-1 text-gray-500 capitalize bg-[#F3F4F6] rounded-md cursor-not-allowed rtl:-scale-x-100 dark:bg-gray-800 dark:text-gray-600"
-            >
-              prev
-            </a>
-
-            <a
-              href="#"
-              className="hidden px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-[#F3F4F6] rounded-md sm:inline dark:bg-gray-800 dark:text-gray-200 hover:bg-[#155E75] dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
-            >
-              1
-            </a>
-
-            <a
-              href="#"
-              className="hidden px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-[#F3F4F6] rounded-md sm:inline dark:bg-gray-800 dark:text-gray-200 hover:bg-[#155E75] dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
-            >
-              2
-            </a>
-
-            <a
-              href="#"
-              className="hidden px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-[#F3F4F6] rounded-md sm:inline dark:bg-gray-800 dark:text-gray-200 hover:bg-[#155E75] dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
-            >
-              ...
-            </a>
-
-            <a
-              href="#"
-              className="hidden px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-[#F3F4F6] rounded-md sm:inline dark:bg-gray-800 dark:text-gray-200 hover:bg-[#155E75] dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
-            >
-              9
-            </a>
-
-            <a
-              href="#"
-              className="hidden px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-[#F3F4F6] rounded-md sm:inline dark:bg-gray-800 dark:text-gray-200 hover:bg-[#155E75] dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
-            >
-              10
-            </a>
-
-            <a
-              href="#"
-              className="flex items-center justify-center px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-[#F3F4F6] rounded-md rtl:-scale-x-100 dark:bg-gray-800 dark:text-gray-200 hover:bg-[#155E75] dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
-            >
-              next
-            </a>
+          <div className="flex justify-between items-center pb-5">
+            <span>
+              Showing {indexOfFirstItem + 1}-
+              {Math.min(indexOfLastItem, filteredPosts.length)} of{" "}
+              {filteredPosts.length}
+            </span>
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              breakClassName={"break-me"}
+              pageCount={pageCount}
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={1}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination"}
+              subContainerClassName={"pages pagination"}
+              activeClassName={"active"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextClassName={"page-item"}
+              nextLinkClassName={"page-link"}
+              disabledClassName={"disabled"}
+            />
           </div>
         </div>
       </div>
