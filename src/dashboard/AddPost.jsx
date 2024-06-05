@@ -9,8 +9,18 @@ import { useQuery } from "@tanstack/react-query";
 
 const AddPost = () => {
   const { user } = useContext(AuthContext);
-
   const axiosPublic = useAxiosPublic();
+
+  // get tags
+  const { data: tags = [] } = useQuery({
+    queryKey: ["tags"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`http://localhost:5000/tags`);
+      return data;
+    },
+  });
+
+  
   const { data: posts = [] } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
@@ -101,8 +111,8 @@ const AddPost = () => {
                 <option value="" disabled selected>
                   Who shot first?
                 </option>
-                <option value="Han Solo">Han Solo</option>
-                <option value="Greedo">Greedo</option>
+                {tags.map(tag => <option value={tag.tag}>{tag.tag}</option>)}
+                
               </select>
             </div>
           </div>

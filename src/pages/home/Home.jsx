@@ -3,8 +3,8 @@ import Sidebar from "../../components/Sidebar";
 import PostItem from "../../components/PostItem";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../../hooks/useAxiosPublic";
-import ReactPaginate from 'react-paginate';
-import './pagination.css';
+import ReactPaginate from "react-paginate";
+import "./pagination.css";
 
 const Home = () => {
   const axiosPublic = useAxiosPublic();

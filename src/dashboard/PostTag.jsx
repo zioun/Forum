@@ -4,32 +4,21 @@ import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const Announcement = () => {
+const PostTag = () => {
   const { user } = useContext(AuthContext);
 
   const handlePost = async (e) => {
     e.preventDefault();
     const form = e.target;
-    const title = form.title.value;
-    const description = form.description.value;
-    if (title === "" || description === "") {
+    const tag = form.tag.value;
+    if (tag === "") {
       return toast.error("Input Can't be empty");
     }
     const postData = {
-      title,
-      description,
-      date: new Date(),
-      author: {
-        email: user?.email,
-        name: user?.displayName,
-        photo: user?.photoURL,
-      },
+      tag,
     };
     try {
-      const { data } = await axios.post(
-        `http://localhost:5000/announcement`,
-        postData
-      );
+      const { data } = await axios.post(`http://localhost:5000/tags`, postData);
       console.log(data);
       Swal.fire({
         title: "Success!",
@@ -44,43 +33,25 @@ const Announcement = () => {
   return (
     <div>
       <Toaster />
-      <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 mt-5 border">
-        <h2 className="text-lg font-semibold text-gray-700 capitalize dark:text-white">
-          Announcement
+      <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 border">
+        <h2 className="text-lg font-semibold text-gray-700  dark:text-white">
+          Tag insert form
         </h2>
 
         <form onSubmit={handlePost}>
           <div className="w-[455px]">
             <div className="w-full mt-5">
-              <label
-                className="text-gray-700 dark:text-gray-200"
-                htmlFor="postTitle"
-              >
-                Title
+              <label className="text-gray-700 dark:text-gray-200" htmlFor="tag">
+                Tag
               </label>
               <input
-                id="postTitle"
-                name="title"
+                id="postTag"
+                name="tag"
                 type="text"
-                placeholder="Type Announcement Title"
+                placeholder="Type tag"
                 className="inline-block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring h-[47px]"
               />
             </div>
-          </div>
-
-          <div className="mt-4">
-            <label
-              className="text-gray-700 dark:text-gray-200"
-              htmlFor="postContent"
-            >
-              Description
-            </label>
-            <textarea
-              name="description"
-              id="postContent"
-              placeholder="Type Description"
-              className="block w-full px-4 py-3 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring h-32"
-            />
           </div>
 
           <div className="flex justify-end mt-6">
@@ -94,4 +65,4 @@ const Announcement = () => {
   );
 };
 
-export default Announcement;
+export default PostTag;
