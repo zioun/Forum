@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { AuthContext } from "../providers/AuthProvider";
 
 const Dashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { logOut } = useContext(AuthContext);
   return (
     <div className="flex gap-10">
       <aside class="flex flex-col w-64 h-screen px-4 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
@@ -190,6 +190,32 @@ const Dashboard = () => {
                 <span class="mx-3 font-medium">Announcement</span>
               </span>
             </Link>
+            <div className="mt-5 border-t">
+              <Link to={"/"}>
+                <button
+                  onClick={logOut}
+                  class="flex mt-2 items-center px-4 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700 w-full"
+                  href="#"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+                    />
+                  </svg>
+
+                  <span class="mx-3 font-medium">Logout</span>
+                </button>
+              </Link>
+            </div>
           </nav>
         </div>
       </aside>

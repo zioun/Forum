@@ -22,14 +22,14 @@ const Login = () => {
       const email = result?.user?.email;
       console.log(email);
 
-      toast.success('Signin Successfully');
-      navigate(location.state ? location.state : '/');
+      toast.success("Signin Successfully");
+      navigate(location.state ? location.state : "/");
     } catch (err) {
       console.log(err);
       toast.error(err?.message);
     }
   };
-  
+
   //email password signIn
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -49,31 +49,25 @@ const Login = () => {
       return toast.error("Password length must be at least 6 characters");
     }
     try {
-        // User Login
-        const result = await signIn(email, pass);
-        const data = {
-          email: result?.user?.email,
-        };
-        console.log(data);
-      
-        console.log(result);
-        navigate(location.state ? location.state : "/");
-        toast.success("Signin Successfully");
-      } catch (err) {
-        console.log(err);
-        toast.error("email or password is incorrect");
-      }
+      // User Login
+      const result = await signIn(email, pass);
+      const data = {
+        email: result?.user?.email,
+      };
+      console.log(data);
+
+      console.log(result);
+      navigate(location.state ? location.state : "/");
+      toast.success("Signin Successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error("email or password is incorrect");
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)]">
-      <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl border">
-        <div
-          className="hidden bg-cover bg-center lg:block lg:w-1/2"
-          style={{
-            backgroundImage: `url(https://i.ibb.co/3fK1k6M/New-Project-16.jpg)`,
-          }}
-        ></div>
-        <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
+      <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg border">
+        <div className="w-full px-6 py-8 md:px-8">
           <div className="">
             <div
               onClick={handleGoogleSignIn}
@@ -100,7 +94,7 @@ const Login = () => {
                 </svg>
               </div>
 
-              <span className="w-5/6 px-4 py-3 font-bold text-center">
+              <span className=" px-4 py-3 font-bold text-center">
                 Sign in with Google
               </span>
             </div>
@@ -124,7 +118,7 @@ const Login = () => {
                 Email Address
               </label>
               <input
-              placeholder="Enter Your Email"
+                placeholder="Enter Your Email"
                 id="LoggingEmailAddress"
                 autoComplete="email"
                 name="email"
@@ -144,7 +138,7 @@ const Login = () => {
               </div>
 
               <input
-              placeholder="Enter Your Password"
+                placeholder="Enter Your Password"
                 id="loggingPassword"
                 autoComplete="current-password"
                 name="password"
@@ -155,7 +149,7 @@ const Login = () => {
             <div className="mt-6">
               <button
                 type="submit"
-                className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
+                className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-cyan-900 rounded-lg hover:bg-cyan-800 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
               >
                 Sign In
               </button>

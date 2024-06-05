@@ -96,7 +96,7 @@ const Navbar = () => {
             </li>
 
             <li className="max-lg:border-b max-lg:py-3 px-3">
-              <Notifications></Notifications>
+              {user && <Notifications></Notifications>}
             </li>
           </ul>
         </div>
@@ -110,10 +110,12 @@ const Navbar = () => {
                 className="btn btn-ghost btn-circle avatar"
               >
                 <div className="w-10 rounded-full">
-                  <img
+                  {
+                    <img
                     alt="Tailwind CSS Navbar component"
                     src={user?.photoURL}
                   />
+                  }
                 </div>
               </div>
               <div
