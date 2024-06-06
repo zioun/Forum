@@ -10,8 +10,10 @@ import MyPosts from "../dashboard/MyPosts";
 import Details from './../pages/details/Details';
 import AllComments from "../dashboard/AllComments";
 import AdminProfile from "../dashboard/AdminProfile";
+import ManageUsers from "../dashboard/ManageUsers";
 import Activities from "../dashboard/Activities";
 import Announcement from "../dashboard/Announcement";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: "admin-profile",
         element: <AdminProfile></AdminProfile>,
+      },
+      {
+        path: "manage-users",
+        element: <ManageUsers></ManageUsers>,
       },
       {
         path: "activities",

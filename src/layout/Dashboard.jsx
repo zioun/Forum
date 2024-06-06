@@ -121,7 +121,7 @@ const Dashboard = () => {
                 <span class="mx-4 font-medium">Admin Profile</span>
               </span>
             </Link>
-            <Link to={"/dashboard/my-post"}>
+            <Link to={"/dashboard/manage-users"}>
               <span
                 class="flex items-center px-4 py-2 mt-5 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
                 href="#"
