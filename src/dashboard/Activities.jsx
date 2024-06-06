@@ -2,11 +2,14 @@ import React, { useContext } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../hooks/useAxiosPublic";
+import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 const Activities = () => {
   const { user } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
-  const { data: reports = [] } = useQuery({
+
+  const { data: reports = [], refetch } = useQuery({
     queryKey: ["reports"],
     queryFn: async () => {
       const { data } = await axiosPublic.get(`/reports`);
@@ -17,25 +20,22 @@ const Activities = () => {
     },
   });
 
-  console.log(reports);
-
-  const handleRestriction = (userId, currentRestriction) => {
-    const newRestriction = currentRestriction === "yes" ? "no" : "yes";
+  const handleDeleteComment = (id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: `You are about to ${newRestriction === "yes" ? "restrict" : "unrestrict"} this user!`,
+      text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: `Yes, ${newRestriction === "yes" ? "restrict" : "unrestrict"}!`,
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosPublic.patch(`/users/${userId}/restriction`, { restriction: newRestriction }).then((res) => {
-          if (res.data.modifiedCount > 0) {
+        axiosPublic.delete(`/comments/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
             Swal.fire({
-              title: "Success!",
-              text: `User has been ${newRestriction === "yes" ? "restricted" : "unrestricted"}.`,
+              title: "Deleted!",
+              text: "Your comment has been deleted.",
               icon: "success",
             });
             refetch();
@@ -43,7 +43,32 @@ const Activities = () => {
         });
       }
     });
-  };
+  }
+
+  const handleDeleteReport = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosPublic.delete(`/reports/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your report has been deleted.",
+              icon: "success",
+            });
+            refetch();
+          }
+        });
+      }
+    });
+  }
 
   return (
     <div className="mt-5">
@@ -59,10 +84,16 @@ const Activities = () => {
                   Comment
                 </th>
                 <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Feedback
+                  Feedback
                 </th>
                 <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Delete
+                  Comments
+                </th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Repors
+                </th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Restriction
                 </th>
               </tr>
             </thead>
@@ -87,11 +118,27 @@ const Activities = () => {
                     </textarea>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
-                      {report.feedback}
+                    {report.feedback}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
-                    <span className="badge bg-[#751515] text-white">
-                      <button onClick={() => handleRestriction(user._id, user.restriction)}>Delete</button>
+                    <span className="flex gap-5">
+                      <button className="badge bg-[#751515] text-white" onClick={() => handleDeleteComment(report.commentId)}>
+                        Delete
+                      </button>
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-800">
+                    <span className="flex gap-5">
+                      <button className="badge bg-[#751515] text-white" onClick={() => handleDeleteReport(report._id)}>
+                        Delete
+                      </button>
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-800">
+                    <span className="flex gap-5">
+                      <Link to={"/dashboard/manage-users"}><span className="badge bg-[#751515] text-white">
+                        Action
+                      </span></Link>
                     </span>
                   </td>
                 </tr>

@@ -19,6 +19,21 @@ const Details = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
 
+  const {
+    data: vote,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["vote", id],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(
+        `http://localhost:5000/votes/${id}`
+      );
+      console.log("Fetched vote data:", data);
+      return data;
+    },
+  });
+
   //post comment
   const handleComment = async (e) => {
     e.preventDefault();
@@ -77,6 +92,28 @@ const Details = () => {
       return data;
     },
   });
+
+  //up vote down vote
+  const handleVote = async (e, upVote) => {
+    e.preventDefault();
+    const postData = {
+      postId: id,
+      email: user?.email,
+      upVote: upVote ? 1 : 0, // Toggle between 1 and 0 for upVote
+      downVote: upVote ? 0 : 1, // Toggle between 0 and 1 for downVote
+    };
+    try {
+      const { data } = await axiosPublic.patch(`/votes`, postData);
+      if (data.success) {
+        console.log("Vote sent successfully");
+        // Assuming you have some way to update the UI with new vote counts
+      } else {
+        console.log("Vote already sent");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   if (postLoading || commentsLoading) {
     return <div>Loading...</div>;
@@ -143,9 +180,9 @@ const Details = () => {
               </div>
               <div className="mt-7 flex gap-3">
                 <div className="flex gap-1 bg-[#E5EBEE] p-1 px-3 rounded-full">
-                  <button className="hover:text-[#D93900]">up</button>
+                <button onClick={(e) => handleVote(e, true)} className="hover:text-[#D93900]">upVote</button>
                   <h4>{post.upVote}</h4>
-                  <button className="hover:text-[#6A5CFF]">down</button>
+                  <button onClick={(e) => handleVote(e, false)} className="hover:text-[#6A5CFF]">downVote</button>
                   <h1>{post.downVote}</h1>
                 </div>
                 <div className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer">

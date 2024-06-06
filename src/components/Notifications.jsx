@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
+import { AuthContext } from "../providers/AuthProvider";
 
 const Notifications = () => {
+  const { user } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const axiosPublic = useAxiosPublic();
 
+  // Fetch announcements data
   const {
-    data: announcements,
-    isLoading,
-    error,
+    data: announcements = [],
+    isLoading: announcementsLoading,
+    error: announcementsError,
   } = useQuery({
     queryKey: ["announcement"],
     queryFn: async () => {
@@ -21,18 +24,48 @@ const Notifications = () => {
     },
   });
 
+  // Fetch notifications data specific to the current user
+  const { data: notifications = [], refetch: refetchNotifications } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`/notifications`);
+      return data.filter((item) => item.email === user.email);
+    },
+    refetchInterval: 60000, // Polling interval in milliseconds (1 minute)
+  });
+
   const handleAnnouncementClick = (announce) => {
     setSelectedAnnouncement(announce);
     setModalOpen(true);
     setIsOpen(false); // Close the notifications dropdown
   };
 
-  if (isLoading) {
+  const handleNotificationClick = async (e, id) => {
+    e.preventDefault();
+    const postData = {
+      notifyId: id,
+      email: user?.email,
+    };
+    try {
+      const { data } = await axiosPublic.patch(`/notifications`, postData);
+      if (data.success) {
+        console.log("Notification sent successfully");
+        // After successfully sending notification, refetch notifications to update count
+        refetchNotifications();
+      } else {
+        console.log("Notification already sent");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (announcementsLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  if (announcementsError) {
+    return <div>Error: {announcementsError.message}</div>;
   }
 
   return (
@@ -45,9 +78,13 @@ const Notifications = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="relative z-10 block text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none"
             >
-              notifications
+              Notifications
             </button>
-            <div className="h-[5px] w-[5px] bg-[#155E75]"></div>
+            {/* Display the notification count */}
+            <div className="text-white p-1 bg-[#155E75]">
+              {/* Calculate the difference between total announcements and user-specific notifications */}
+              {announcements.length - notifications.length}
+            </div>
           </div>
 
           {/* Dropdown menu */}
@@ -61,18 +98,55 @@ const Notifications = () => {
                   >
                     <a
                       href="#"
-                      className="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700"
+                      onClick={(e) => handleNotificationClick(e, announce._id)}
+                      className={`flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700 ${
+                        notifications.some(
+                          (notification) =>
+                            notification.notifyId === announce._id &&
+                            notification.email === user.email
+                        )
+                          ? "text-gray-400"
+                          : ""
+                      }`}
                     >
                       <img
-                        className="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full"
+                        className={`flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full ${
+                          notifications.some(
+                            (notification) =>
+                              notification.notifyId === announce._id &&
+                              notification.email === user.email
+                          )
+                            ? "opacity-40"
+                            : ""
+                        }`}
                         src={announce.author.photo}
                         alt={announce.author.name}
                       />
                       <p className="mx-2 text-sm text-gray-600 dark:text-white">
-                        <span className="font-bold">
+                        <span
+                          className={`font-bold ${
+                            notifications.some(
+                              (notification) =>
+                                notification.notifyId === announce._id &&
+                                notification.email === user.email
+                            )
+                              ? "opacity-70"
+                              : ""
+                          }`}
+                        >
                           {announce.author.name}
                         </span>
-                        <span className="ml-2">
+                        <span
+                          className={`ml-2 ${
+                            notifications.some(
+                              (notification) =>
+                                notification.notifyId === announce._id &&
+                                notification.email === user.email
+                            )
+                              ? "text-gray-400"
+                              : ""
+                          }`}
+                        >
                           {announce.title.length > 20
                             ? `${announce.title.slice(0, 35)}...`
                             : announce.title}
@@ -96,7 +170,7 @@ const Notifications = () => {
           <div className="fixed inset-0 bg-black opacity-50"></div>
           <div className="relative bg-white rounded-lg shadow-lg z-40 p-6 w-11/12 md:w-1/3">
             <button
-              className="absolute top-2 right-2 btn btn-sm btn-circle btn-ghost"
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
               onClick={() => setModalOpen(false)}
             >
               ✕
@@ -107,7 +181,7 @@ const Notifications = () => {
                   <img
                     className="bg-[#90caf93a] p-5 rounded-full"
                     src="https://i.ibb.co/FDV0qT9/icons8-announcement-48.png"
-                    alt=""
+                    alt="Announcement"
                   />
                 </div>
                 <h3 className="font-bold text-lg">
