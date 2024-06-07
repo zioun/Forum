@@ -24,6 +24,8 @@ const MyProfile = () => {
     },
   });
 
+  console.log("hello")
+
   return (
     <div className="mt-5">
       <div className="max-w-[1000px] px-8 py-4 bg-white rounded-lg shadow-md dark:bg-gray-800 border relative">

@@ -14,6 +14,9 @@ import ManageUsers from "../dashboard/ManageUsers";
 import Activities from "../dashboard/Activities";
 import Announcement from "../dashboard/Announcement";
 import PrivateRoute from "./PrivateRoute";
+import Membership from "../pages/membership/Membership";
+import AdminRoute from "./AdminRoute";
+import Payment from "../pages/membership/Payment";
 
 export const router = createBrowserRouter([
   {
@@ -25,8 +28,16 @@ export const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
+        path: "/membership",
+        element: <Membership></Membership>,
+      },
+      {
+        path: "/payment",
+        element: <Payment></Payment>,
+      },
+      {
         path: "/details/:id",
-        element: <Details></Details>,
+        element: <PrivateRoute><Details></Details></PrivateRoute>,
       },
       {
         path: "/login",
@@ -40,7 +51,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard></Dashboard>,
+    element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
     children: [
       {
         path: "my-profile",
@@ -60,19 +71,19 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin-profile",
-        element: <AdminProfile></AdminProfile>,
+        element: <AdminRoute><AdminProfile></AdminProfile></AdminRoute>,
       },
       {
         path: "manage-users",
-        element: <ManageUsers></ManageUsers>,
+        element: <AdminRoute><ManageUsers></ManageUsers></AdminRoute>,
       },
       {
         path: "activities",
-        element: <Activities></Activities>,
+        element: <AdminRoute><Activities></Activities></AdminRoute>,
       },
       {
         path: "announcement",
-        element: <Announcement></Announcement>,
+        element: <AdminRoute><Announcement></Announcement></AdminRoute>,
       },
     ],
   },

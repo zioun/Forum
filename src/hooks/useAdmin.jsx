@@ -5,14 +5,15 @@ import { AuthContext } from '../providers/AuthProvider';
 
 const useAdmin = () => {
     const {user, loading} = useContext(AuthContext);
-    const axiosSecure = useAxiosPublic();
+    console.log(user.email)
+    const axiosPublic = useAxiosPublic();
     const {data: admin, isPending: isAdminLoading} = useQuery({
         queryKey:[user?.email, 'admin'],
-        enabled: !loading,
+        enabled: !!user?.email,
         queryFn: async() =>{
-            const res = await axiosSecure.get(`/users/${user.email}`);
+            const res = await axiosPublic.get(`/users/${user.email}`);
             console.log(res.data);
-            return res.data?.admin
+            return res.data.role=="admin"? true : false;
         }
     })
     return[admin, isAdminLoading]

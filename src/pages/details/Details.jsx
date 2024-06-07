@@ -125,32 +125,26 @@ const Details = () => {
     }
   };
 
-
-   const email = user?.email;
-
-    const { data: userData, refetch } = useQuery({
-        queryKey: ["user", email],
-        queryFn: async () => {
-            if (!email) return null;
-            const { data } = await axios.get(`http://localhost:5000/users/${email}`);
-            return data;
-        },
-        enabled: !!email,
-    });
-
-    useEffect(() => {
-        if (email) {
-            refetch();
-        }
-    }, [email, refetch]);
-
-    console.log("User data:", userData?.restriction);
-
-    if (!userData) {
-        return <div>Loading...</div>;
+  
+  const email = user?.email;
+  const { data: userData, refetch } = useQuery({
+    queryKey: ["user", email],
+    queryFn: async () => {
+      if (!email) return null;
+      const { data } = await axios.get(`http://localhost:5000/users/${email}`);
+      return data;
+    },
+    enabled: !!email,
+  });
+  useEffect(() => {
+    if (email) {
+      refetch();
     }
-
-
+  }, [email, refetch]);
+  console.log("User data:", userData?.restriction);
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
 
 
 
@@ -275,7 +269,7 @@ const Details = () => {
                 </div>
               </div>
               <div>
-                {userData?.restriction == 'yes' ? (
+                {userData?.restriction == "yes" ? (
                   <div>
                     <textarea
                       className="border rounded-2xl min-h-[100px] outline-none p-3 mt-5 w-full"

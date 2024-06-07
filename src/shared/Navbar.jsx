@@ -91,7 +91,7 @@ const Navbar = () => {
                 href="#"
                 className="hover:text-blue-600 block font-semibold transition-all"
               >
-                Membership
+                <Link to={"/membership"}>Membership</Link>
               </a>
             </li>
 

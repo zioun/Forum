@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../hooks/useAxiosPublic";
@@ -8,7 +8,8 @@ const ManageUsers = () => {
   const { user } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
 
-  const { data: users = [], refetch } = useQuery({
+  // Fetch all users
+  const { data: users = [], refetch: refetchUsers } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
       const { data } = await axiosPublic.get(`/users`);
@@ -16,6 +17,7 @@ const ManageUsers = () => {
     },
   });
 
+  // Handle role change to admin
   const handleRole = (userId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -34,13 +36,14 @@ const ManageUsers = () => {
               text: "User has been made an admin.",
               icon: "success",
             });
-            refetch();
+            refetchUsers();
           }
         });
       }
     });
   };
 
+  // Handle restriction change
   const handleRestriction = (userId, currentRestriction) => {
     const newRestriction = currentRestriction === "yes" ? "no" : "yes";
     Swal.fire({
@@ -60,12 +63,37 @@ const ManageUsers = () => {
               text: `User has been ${newRestriction === "yes" ? "restricted" : "unrestricted"}.`,
               icon: "success",
             });
-            refetch();
+            refetchUsers();
           }
         });
       }
     });
   };
+
+  const email = user?.email;
+
+  // Fetch user data based on email
+  const { data: userData } = useQuery({
+    queryKey: ["user", email],
+    queryFn: async () => {
+      if (!email) return null;
+      const { data } = await axiosPublic.get(`/users/${email}`);
+      return data;
+    },
+    enabled: !!email,
+  });
+
+  useEffect(() => {
+    if (email) {
+      refetchUsers();
+    }
+  }, [email, refetchUsers]);
+
+  console.log("User data:", userData?.restriction);
+
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="mt-5">
@@ -91,48 +119,31 @@ const ManageUsers = () => {
                 </th>
               </tr>
             </thead>
-
             <tbody className="bg-white divide-y divide-gray-200 whitespace-nowrap">
               {users.map((user) => (
                 <tr key={user._id}>
                   <td className="px-4 py-4 text-sm text-gray-800 flex items-center gap-3">
-                    <img
-                      className="h-[50px] rounded-full"
-                      src={user.photo}
-                      alt=""
-                    />
+                    <img className="h-[50px] rounded-full" src={user.photo} alt="" />
                     <div>
                       <h1 className="font-bold">{user.name}</h1>
                       <p>{user.email}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-800">
-                    {user.email}
-                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-800">{user.email}</td>
                   <td className="px-4 py-4 text-sm text-gray-800">
                     <span className="badge bg-green-100 text-green-600">
-                      <button
-                        disabled={user.role === "admin"}
-                        onClick={() => handleRole(user._id)}
-                      >
+                      <button disabled={user.role === "admin"} onClick={() => handleRole(user._id)}>
                         {user.role === "admin" ? "Admin" : "User"}
                       </button>
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
                     <span className="badge bg-red-100 text-red-600">
-                      {user.subscription === "true" ? (
-                        <p>Subscribe</p>
-                      ) : (
-                        <p>Unsubscribe</p>
-                      )}
+                      {user.subscription === "true" ? <p>Subscribe</p> : <p>Unsubscribe</p>}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
-                    <button
-                      onClick={() => handleRestriction(user._id, user.restriction)}
-                      className="badge bg-green-100 text-green-600"
-                    >
+                    <button onClick={() => handleRestriction(user._id, user.restriction)} className="badge bg-green-100 text-green-600">
                       {user.restriction === "yes" ? "Restricted" : "Unrestricted"}
                     </button>
                   </td>
