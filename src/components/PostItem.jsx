@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
@@ -9,28 +9,25 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from "react-share";
+import { AuthContext } from "../providers/AuthProvider";
 
 const PostItem = ({ getPost }) => {
   const axiosPublic = useAxiosPublic();
+  const { user } = useContext(AuthContext);
 
-  const {
-    _id,
-    title,
-    category,
-    description,
-    date,
-    award,
-    upVote,
-    downVote,
-    author,
-  } = getPost;
+  const [upVotes, setUpVotes] = useState(0);
+  const [downVotes, setDownVotes] = useState(0);
+  const [activeUp, setActiveUp] = useState(false);
+  const [activeDown, setActiveDown] = useState(false);
+
+  const { _id, title, category, description, date, author } = getPost;
 
   // Convert date to "time ago" format
   const timeAgo = formatDistanceToNow(new Date(date), { addSuffix: true });
 
   // Fetch comments
   const {
-    data: comments = [],
+    data: comments,
     isLoading: commentsLoading,
     error: commentsError,
   } = useQuery({
@@ -40,12 +37,53 @@ const PostItem = ({ getPost }) => {
       return data.sort((a, b) => new Date(b.date) - new Date(a.date));
     },
   });
-
-  // Filter comments based on postId
-  const filteredComments = comments.filter((comment) => comment.postId === _id);
+  const filteredComments =
+    comments && comments.filter((comment) => comment.postId === _id);
 
   const shareUrl = `${window.location.origin}/details/${_id}`;
   const shareTitle = title;
+
+  const fetchVotes = async () => {
+    try {
+      const { data } = await axiosPublic.get(`/votes/${_id}`);
+      setUpVotes(data.totalUpVotes);
+      setDownVotes(data.totalDownVotes);
+
+      // Check if the current user has already voted
+      const userVote = data.votes.find((vote) => vote.email === user?.email);
+      if (userVote) {
+        setActiveUp(userVote.upVote === 1);
+        setActiveDown(userVote.downVote === 1);
+      }
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchVotes();
+  }, [axiosPublic, _id, user?.email]);
+
+  const handleVote = async (e, upVote) => {
+    e.preventDefault();
+    const postData = {
+      postId: _id,
+      email: user?.email,
+      upVote: upVote ? 1 : 0,
+      downVote: upVote ? 0 : 1,
+    };
+    try {
+      const { data } = await axiosPublic.patch(`/votes`, postData);
+      if (data.success) {
+        console.log("Vote sent successfully");
+        fetchVotes(); // Fetch the updated votes immediately after voting
+      } else {
+        console.log("Vote already sent");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="border-b px-10 w-full py-10 hover:bg-[#F6F8F9]">
@@ -83,13 +121,31 @@ const PostItem = ({ getPost }) => {
       {/* bottom function */}
       <div className="mt-7 flex gap-3">
         <div className="flex gap-1 bg-[#E5EBEE] p-1 px-3 rounded-full">
-          <button className="hover:text-[#D93900]">up</button>
-          <h4>{upVote}</h4>
-          <button className="hover:text-[#6A5CFF]">down</button>
-          <h1>{downVote}</h1>
+          <button
+            onClick={(e) => handleVote(e, true)}
+            className={`hover:text-[#D93900] ${activeUp ? "text-red-500" : ""}`}
+          >
+            upVote
+          </button>
+          <h4>{upVotes}</h4>
+          <button
+            onClick={(e) => handleVote(e, false)}
+            className={`hover:text-[#6A5CFF] ${
+              activeDown ? "text-blue-500" : ""
+            }`}
+          >
+            downVote
+          </button>
+          <h4>{downVotes}</h4>
         </div>
         <div className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer">
-          <h1>{filteredComments.length}</h1>
+          {commentsLoading ? (
+            <span>Loading comments...</span>
+          ) : commentsError ? (
+            <span>Error loading comments</span>
+          ) : (
+            <h1>{filteredComments.length}</h1>
+          )}
         </div>
         <div className="object-cover w-5">
           <img
@@ -99,7 +155,11 @@ const PostItem = ({ getPost }) => {
           />
         </div>
         <div className="dropdown">
-          <div tabIndex={0} role="button" className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer justify-center items-center">
+          <div
+            tabIndex={0}
+            role="button"
+            className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer justify-center items-center"
+          >
             Share
           </div>
           <div
@@ -112,13 +172,13 @@ const PostItem = ({ getPost }) => {
                   FacebookShareButton
                 </FacebookShareButton>
                 <TwitterShareButton url={shareUrl} title={shareTitle}>
-                TwitterShareButton
+                  TwitterShareButton
                 </TwitterShareButton>
                 <TelegramShareButton url={shareUrl} title={shareTitle}>
-                TelegramShareButton
+                  TelegramShareButton
                 </TelegramShareButton>
                 <WhatsappShareButton url={shareUrl} title={shareTitle}>
-                WhatsappShareButton
+                  WhatsappShareButton
                 </WhatsappShareButton>
               </div>
             </div>

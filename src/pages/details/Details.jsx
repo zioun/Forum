@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { AuthContext } from "../../providers/AuthProvider";
@@ -11,30 +11,45 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from "react-share";
+import axios from "axios";
 
 const Details = () => {
   const { user } = useContext(AuthContext);
   const [comment, setComment] = useState("");
+
+  const [upVotes, setUpVotes] = useState(0);
+  const [downVotes, setDownVotes] = useState(0);
+
+  const [activeUp, setActiveUp] = useState(false);
+  const [activeDown, setActiveDown] = useState(false);
+
   const axiosPublic = useAxiosPublic();
-  const { id } = useParams();
+  const { id } = useParams(); // Assuming `id` is the postId
   const queryClient = useQueryClient();
 
-  const {
-    data: vote,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["vote", id],
-    queryFn: async () => {
+  const fetchVotes = async () => {
+    try {
       const { data } = await axiosPublic.get(
         `http://localhost:5000/votes/${id}`
       );
-      console.log("Fetched vote data:", data);
-      return data;
-    },
-  });
+      setUpVotes(data.totalUpVotes);
+      setDownVotes(data.totalDownVotes);
 
-  //post comment
+      // Check if the current user has already voted
+      const userVote = data.votes.find((vote) => vote.email === user?.email);
+      if (userVote) {
+        setActiveUp(userVote.upVote === 1);
+        setActiveDown(userVote.downVote === 1);
+      }
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchVotes();
+  }, [axiosPublic, id, user?.email]);
+
   const handleComment = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -57,14 +72,12 @@ const Details = () => {
       toast.success("Thanks for your comment");
       setComment("");
       form.reset();
-      // Invalidate and refetch comments after posting a comment
       queryClient.invalidateQueries({ queryKey: ["comments", id] });
     } catch (err) {
       console.log(err);
     }
   };
 
-  // Fetch comments
   const {
     data: comments,
     isLoading: commentsLoading,
@@ -77,7 +90,6 @@ const Details = () => {
     },
   });
 
-  // get post data by id
   const {
     data: post,
     isLoading: postLoading,
@@ -88,25 +100,23 @@ const Details = () => {
       const { data } = await axiosPublic.get(
         `http://localhost:5000/posts/${id}`
       );
-      console.log("Fetched post data:", data);
       return data;
     },
   });
 
-  //up vote down vote
   const handleVote = async (e, upVote) => {
     e.preventDefault();
     const postData = {
       postId: id,
       email: user?.email,
-      upVote: upVote ? 1 : 0, // Toggle between 1 and 0 for upVote
-      downVote: upVote ? 0 : 1, // Toggle between 0 and 1 for downVote
+      upVote: upVote ? 1 : 0,
+      downVote: upVote ? 0 : 1,
     };
     try {
       const { data } = await axiosPublic.patch(`/votes`, postData);
       if (data.success) {
         console.log("Vote sent successfully");
-        // Assuming you have some way to update the UI with new vote counts
+        fetchVotes(); // Fetch the updated votes immediately after voting
       } else {
         console.log("Vote already sent");
       }
@@ -114,6 +124,35 @@ const Details = () => {
       console.log(err);
     }
   };
+
+
+   const email = user?.email;
+
+    const { data: userData, refetch } = useQuery({
+        queryKey: ["user", email],
+        queryFn: async () => {
+            if (!email) return null;
+            const { data } = await axios.get(`http://localhost:5000/users/${email}`);
+            return data;
+        },
+        enabled: !!email,
+    });
+
+    useEffect(() => {
+        if (email) {
+            refetch();
+        }
+    }, [email, refetch]);
+
+    console.log("User data:", userData?.restriction);
+
+    if (!userData) {
+        return <div>Loading...</div>;
+    }
+
+
+
+
 
   if (postLoading || commentsLoading) {
     return <div>Loading...</div>;
@@ -127,15 +166,10 @@ const Details = () => {
     return <div>Error: {commentsError.message}</div>;
   }
 
-  // Filter comments based on postId
   const filteredComments = comments.filter((comment) => comment.postId === id);
-
-  // Ensure post is defined before accessing its properties
   const timeAgo = post
     ? formatDistanceToNow(new Date(post.date), { addSuffix: true })
     : "Unknown date";
-
-  // Define shareUrl and shareTitle
   const shareUrl = `${window.location.href}`;
   const shareTitle = post?.title || "Check this out!";
 
@@ -180,10 +214,24 @@ const Details = () => {
               </div>
               <div className="mt-7 flex gap-3">
                 <div className="flex gap-1 bg-[#E5EBEE] p-1 px-3 rounded-full">
-                <button onClick={(e) => handleVote(e, true)} className="hover:text-[#D93900]">upVote</button>
-                  <h4>{post.upVote}</h4>
-                  <button onClick={(e) => handleVote(e, false)} className="hover:text-[#6A5CFF]">downVote</button>
-                  <h1>{post.downVote}</h1>
+                  <button
+                    onClick={(e) => handleVote(e, true)}
+                    className={`hover:text-[#D93900] ${
+                      activeUp ? "text-red-500" : ""
+                    }`}
+                  >
+                    upVote
+                  </button>
+                  <h4>{upVotes}</h4>
+                  <button
+                    onClick={(e) => handleVote(e, false)}
+                    className={`hover:text-[#6A5CFF] ${
+                      activeDown ? "text-blue-500" : ""
+                    }`}
+                  >
+                    downVote
+                  </button>
+                  <h4>{downVotes}</h4>
                 </div>
                 <div className="flex gap-3 bg-[#E5EBEE] p-1 px-3 rounded-full cursor-pointer">
                   <h1>{filteredComments.length}</h1>
@@ -227,28 +275,80 @@ const Details = () => {
                 </div>
               </div>
               <div>
-                <form onSubmit={handleComment}>
-                  <textarea
-                    className="border rounded-2xl min-h-[100px] outline-none p-3 mt-5 w-full"
-                    name="comment"
-                    placeholder="Type your comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  ></textarea>
-                  <div className="flex justify-end">
-                    <button
-                      className={`px-5 py-2 text-white rounded-full ${
-                        comment.trim() === "" ? "bg-gray-500" : "bg-[#155E75]"
-                      }`}
-                      disabled={comment.trim() === ""}
-                    >
-                      Comment
-                    </button>
+                {userData?.restriction == 'yes' ? (
+                  <div>
+                    <textarea
+                      className="border rounded-2xl min-h-[100px] outline-none p-3 mt-5 w-full"
+                      name="comment"
+                      placeholder="Type your comment"
+                    ></textarea>
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() =>
+                          document.getElementById("my_modal_3").showModal()
+                        }
+                        className={
+                          "px-5 py-2 text-white rounded-full bg-gray-500"
+                        }
+                      >
+                        Comment
+                      </button>
+                      <dialog id="my_modal_3" className="modal text-center">
+                        <div className="modal-box">
+                          <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                              ✕
+                            </button>
+                          </form>
+                          <div className="flex justify-center">
+                            <img
+                              src={"https://i.ibb.co/SsKJ9HL/icons8-close.gif"}
+                              alt=""
+                            />
+                          </div>
+                          <h3 className="font-bold text-lg">
+                            Your account is restricted right now
+                          </h3>
+                          <div className="">
+                            <textarea
+                              className="w-full h-[205px] mt-2"
+                              readOnly
+                              value="Interactively target low-risk high-yield customer service with just in time users. Holisticly strategize reliable resources after unique potentialities. Conveniently embrace multidisciplinary methods of empowerment and highly efficient expertise. Dramatically recaptiualize turnkey processes whereas standardized experiences. Dramatically."
+                            />
+                            <h1 className="font-bold">
+                              Support :{" "}
+                              <span className="text-green-900">
+                                jionkhan0@gmail.com
+                              </span>
+                            </h1>
+                          </div>
+                        </div>
+                      </dialog>
+                    </div>
                   </div>
-                </form>
+                ) : (
+                  <form onSubmit={handleComment}>
+                    <textarea
+                      className="border rounded-2xl min-h-[100px] outline-none p-3 mt-5 w-full"
+                      name="comment"
+                      placeholder="Type your comment"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                    ></textarea>
+                    <div className="flex justify-end">
+                      <button
+                        className={`px-5 py-2 text-white rounded-full ${
+                          comment.trim() === "" ? "bg-gray-500" : "bg-[#155E75]"
+                        }`}
+                        disabled={comment.trim() === ""}
+                      >
+                        Comment
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
               <div>
-                {/* Render filtered comments */}
                 {filteredComments.map((comment) => {
                   const commentAgo = comment
                     ? formatDistanceToNow(new Date(comment.date), {
