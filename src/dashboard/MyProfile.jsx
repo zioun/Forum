@@ -1,14 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { formatDistanceToNow } from "date-fns";
-import {
-  useQuery,
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const MyProfile = () => {
   const { user } = useContext(AuthContext);
+  const [votes, setVotes] = useState({});
   const axiosPublic = useAxiosPublic();
+
+  const { data: userData = [] } = useQuery({
+    queryKey: ["payments"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`/payments`);
+      return data;
+    },
+  });
+  const hasPaid = userData.some((item) => item.email === user?.email);
+
+  
   const { data: posts = [] } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
@@ -24,22 +34,43 @@ const MyProfile = () => {
     },
   });
 
-  console.log("hello")
+  const fetchVotes = async (postId) => {
+    try {
+      const { data } = await axiosPublic.get(`/votes/${postId}`);
+      setVotes((prevVotes) => ({
+        ...prevVotes,
+        [postId]: { upVotes: data.totalUpVotes, downVotes: data.totalDownVotes }
+      }));
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
+
+  useEffect(() => {
+    posts.forEach(post => {
+      fetchVotes(post._id);
+    });
+  }, [posts]);
 
   return (
     <div className="mt-5">
       <div className="max-w-[1000px] px-8 py-4 bg-white rounded-lg shadow-md dark:bg-gray-800 border relative">
-        <div className="w-full max-w-40 overflow-hidden bg-white rounded-lg dark:bg-gray-800">
+        <div className="w-full max-w-40 bg-white rounded-lg dark:bg-gray-800">
           <img
-            className="object-cover w-full h-40 rounded-full"
+            className="object-cover w-32 h-32 rounded-full"
             src={user?.photoURL}
             alt="avatar"
           />
-          <img
-            className="drop-shadow-2xl shadow-white object-cover w-[30px] h-[50px] absolute top-[130px] left-40"
+          {!hasPaid ? (<img
+            className="drop-shadow-2xl shadow-white object-cover w-[30px] h-[50px] absolute top-[100px] left-32"
             src="https://i.ibb.co/MDks0zR/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-2-removebg-previe.png"
             alt="medal"
-          />
+          />):(<img
+            className="drop-shadow-2xl shadow-white object-cover w-[30px] h-[50px] absolute top-[100px] left-32"
+            src="https://i.ibb.co/ZmvjVWS/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-3-removebg-previe.png"
+            alt="medal"
+          />)}
+          
           <div className="py-5 text-center">
             <a
               href="#"
@@ -103,12 +134,12 @@ const MyProfile = () => {
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
                     <span className="badge bg-blue-100 text-blue-600">
-                      {post.upVote}
+                      {votes[post._id]?.upVotes || 0}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
                     <span className="badge bg-red-100 text-red-600">
-                      {post.downVote}
+                      {votes[post._id]?.downVotes || 0}
                     </span>
                   </td>
                 </tr>

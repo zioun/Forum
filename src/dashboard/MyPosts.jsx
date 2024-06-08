@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../hooks/useAxiosPublic";
@@ -6,7 +6,10 @@ import { Link } from "react-router-dom";
 
 const MyPosts = () => {
   const { user } = useContext(AuthContext);
+  const [votes, setVotes] = useState({});
   const axiosPublic = useAxiosPublic();
+
+
   const { data: posts = [] } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
@@ -20,6 +23,24 @@ const MyPosts = () => {
       return sortedData;
     },
   });
+
+  const fetchVotes = async (postId) => {
+    try {
+      const { data } = await axiosPublic.get(`/votes/${postId}`);
+      setVotes((prevVotes) => ({
+        ...prevVotes,
+        [postId]: { upVotes: data.totalUpVotes, downVotes: data.totalDownVotes }
+      }));
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  };
+
+  useEffect(() => {
+    posts.forEach(post => {
+      fetchVotes(post._id);
+    });
+  }, [posts]);
 
   return (
     <div className="mt-5">
@@ -56,12 +77,12 @@ const MyPosts = () => {
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
                     <span className="badge bg-blue-100 text-blue-600">
-                      {post.upVote}
+                      {votes[post._id]?.upVotes || 0}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
                     <span className="badge bg-red-100 text-red-600">
-                      {post.downVote}
+                      {votes[post._id]?.downVotes || 0}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">

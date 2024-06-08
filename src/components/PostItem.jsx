@@ -20,7 +20,7 @@ const PostItem = ({ getPost }) => {
   const [activeUp, setActiveUp] = useState(false);
   const [activeDown, setActiveDown] = useState(false);
 
-  const { _id, title, category, description, date, author } = getPost;
+  const { _id, title, category, description, date, author, award } = getPost;
 
   // Convert date to "time ago" format
   const timeAgo = formatDistanceToNow(new Date(date), { addSuffix: true });
@@ -148,11 +148,19 @@ const PostItem = ({ getPost }) => {
           )}
         </div>
         <div className="object-cover w-5">
-          <img
-            className="w-full"
-            src="https://i.ibb.co/SxmByX6/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-2.jpg"
-            alt=""
-          />
+          {award == "gold" ? (
+            <img
+              className="w-full"
+              src="https://i.ibb.co/ZmvjVWS/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-3-removebg-previe.png"
+              alt=""
+            />
+          ) : (
+            <img
+              className="w-full"
+              src="https://i.ibb.co/MDks0zR/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-2-removebg-previe.png"
+              alt=""
+            />
+          )}
         </div>
         <div className="dropdown">
           <div

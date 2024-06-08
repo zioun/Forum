@@ -1,70 +1,174 @@
-import React from "react";
+import React, { useContext } from "react";
 import PostTag from "./PostTag";
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { AuthContext } from "../providers/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosPublic from "./../hooks/useAxiosPublic";
 
-const data = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-  { name: 'Group C', value: 300 },
-  { name: 'Group D', value: 200 },
-];
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  index,
+}) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+    >
       {`${(percent * 100).toFixed(0)}%`}
     </text>
   );
 };
 
 const AdminProfile = () => {
+  const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
+
+  const { data: getPosts } = useQuery({
+    queryKey: ["getPosts"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`/posts`);
+      return data;
+    },
+  });
+  const { data: getComments } = useQuery({
+    queryKey: ["getComments"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`/comments`);
+      return data;
+    },
+  });
+  const { data: getUsers } = useQuery({
+    queryKey: ["getUsers"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`/users`);
+      return data;
+    },
+  });
+
+  const postCount = getPosts?.length || 0;
+  const commentCount = getComments?.length || 0;
+  const userCount = getUsers?.length || 0;
+
+  const data = [
+    { name: "Posts", value: postCount },
+    { name: "Comments", value: commentCount },
+    { name: "Users", value: userCount },
+  ];
+
   return (
     <div>
+      <div className="flex justify-center items-center mt-5 border shadow-md rounded-2xl">
+        <div className=" bg-white rounded-lg dark:bg-gray-800 ">
+          <div className="flex justify-center mt-5">
+            <img
+              className="object-cover max-w-28 h-28 rounded-full"
+              src={user?.photoURL}
+              alt="avatar"
+            />
+          </div>
+          <div className="mt-3 mb-5 text-center">
+            <a
+              href="#"
+              className="block text-xl font-bold text-gray-800 dark:text-white"
+              tabIndex="0"
+              role="link"
+            >
+              {user?.displayName}
+            </a>
+            <span className="text-sm text-gray-700 dark:text-gray-200">
+              {user?.email}
+            </span>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-wrap gap-5">
         <div className="w-[300px] px-8 py-5 bg-white rounded-lg shadow-md dark:bg-gray-800 mt-5 border">
           <div className="flex items-center justify-between">
-            <span className="bg-[#EFF2F7] text-[#155E75] p-3 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              </svg>
-            </span>
+            <img src="https://i.ibb.co/gzNJj0w/icons8-post-64.png" alt="" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold mt-4">$3.456K</h1>
-            <p>Total views</p>
+            <h1 className="text-2xl font-bold mt-4">{postCount}</h1>
+            <p>Total Post</p>
           </div>
         </div>
-        {/* Repeat the above block for other cards as needed */}
+        <div className="w-[300px] px-8 py-5 bg-white rounded-lg shadow-md dark:bg-gray-800 mt-5 border">
+          <div className="flex items-center justify-between">
+            <img src="https://i.ibb.co/HHCCBTQ/icons8-comments-64.png" alt="" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold mt-4">{commentCount}</h1>
+            <p>Total Comments</p>
+          </div>
+        </div>
+        <div className="w-[300px] px-8 py-5 bg-white rounded-lg shadow-md dark:bg-gray-800 mt-5 border">
+          <div className="flex items-center justify-between">
+            <img
+              className="w-16"
+              src="https://i.ibb.co/bFGw2Ww/icons8-users-96.png"
+              alt=""
+            />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold mt-4">{userCount}</h1>
+            <p>Total Users</p>
+          </div>
+        </div>
       </div>
       <div className="flex gap-5 mt-10">
         <PostTag />
-        <div className="w-[400px] border rounded-lg shadow-md">
-          <ResponsiveContainer>
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
+        <div className=" rounded-lg border flex justify-center items-center shadow-md">
+          <div className="w-[200px] h-[240px]">
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex flex-col justify-start gap-3 p-10">
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 bg-[#0088FE]"></div>
+              <h1>Posts</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 bg-[#00C49F]"></div>
+              <h1>Comments</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 bg-[#FFBB28]"></div>
+              <h1>Users</h1>
+            </div>
+          </div>
         </div>
       </div>
     </div>

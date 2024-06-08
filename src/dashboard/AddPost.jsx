@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
@@ -10,24 +10,33 @@ import { useQuery } from "@tanstack/react-query";
 const AddPost = () => {
   const { user } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
+  const [userPosts, setUserPosts] = useState([]);
+
+  const { data: userData = [] } = useQuery({
+    queryKey: ["payments"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get(`/payments`);
+      return data;
+    },
+  });
+
+  const hasPaid = userData.some((item) => item.email === user?.email);
 
   // get tags
   const { data: tags = [] } = useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(`http://localhost:5000/tags`);
+      const { data } = await axiosPublic.get(`/tags`);
       return data;
     },
   });
 
-  
-  const { data: posts = [] } = useQuery({
+  useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(`http://localhost:5000/posts`);
-      const filteredData = data.filter(
-        (item) => item.author.email === user.email
-      );
+      const { data } = await axiosPublic.get(`/posts`);
+      const filteredData = data.filter((item) => item.author.email === user?.email);
+      setUserPosts(filteredData);
       return filteredData;
     },
   });
@@ -39,14 +48,25 @@ const AddPost = () => {
     const category = form.category.value;
     const description = form.description.value;
     if (title === "" || category === "" || description === "") {
-      return toast.error("Input Can't be empty");
+      return toast.error("Input can't be empty");
     }
+
+    if (!hasPaid && userPosts.length >= 5) {
+      return Swal.fire({
+        title: "Limit Reached",
+        text: "You have reached the limit of posts you can add. Please become a member to add more posts.",
+        icon: "warning",
+      });
+    }
+
+    const award = hasPaid ? "gold" : "bronze";
+
     const postData = {
       title,
       category,
       description,
       date: new Date(),
-      award: "bronze",
+      award,
       upVote: 0,
       downVote: 0,
       author: {
@@ -55,22 +75,22 @@ const AddPost = () => {
         photo: user?.photoURL,
       },
     };
+
     try {
-      const { data } = await axios.post(
-        `http://localhost:5000/posts`,
-        postData
-      );
+      const { data } = await axios.post(`http://localhost:5000/posts`, postData);
       console.log(data);
       Swal.fire({
         title: "Success!",
-        text: "Volunteer post added Successfully!",
+        text: "Volunteer post added successfully!",
         icon: "success",
       });
       form.reset();
+      setUserPosts((prevPosts) => [...prevPosts, postData]);
     } catch (err) {
       console.log(err);
     }
   };
+
   return (
     <div>
       <Toaster />
@@ -109,10 +129,13 @@ const AddPost = () => {
                 className="select block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               >
                 <option value="" disabled selected>
-                  Who shot first?
+                  Select Category
                 </option>
-                {tags.map(tag => <option value={tag.tag}>{tag.tag}</option>)}
-                
+                {tags.map((tag) => (
+                  <option key={tag.tag} value={tag.tag}>
+                    {tag.tag}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -133,16 +156,19 @@ const AddPost = () => {
           </div>
 
           <div className="flex justify-end mt-6">
-            {posts.length > 5 ? (
-              <Link to="/">
-                <span className="tooltip px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600" data-tip="hello asdfasdfasdf adsfasdfa sdfa adsf asdf ">
-                  Become a Member
-                </span>
-              </Link>
-            ) : (
+            {hasPaid || userPosts.length < 5 ? (
               <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
                 Post
               </button>
+            ) : (
+              <Link to="/membership">
+                <span
+                  className="tooltip px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
+                  data-tip="You have reached the limit of posts you can add."
+                >
+                  Become a Member
+                </span>
+              </Link>
             )}
           </div>
         </form>

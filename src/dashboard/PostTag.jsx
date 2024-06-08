@@ -42,7 +42,7 @@ const PostTag = () => {
           <div className="w-[455px]">
             <div className="w-full mt-5">
               <label className="text-gray-700 dark:text-gray-200" htmlFor="tag">
-                Tag
+                Enter Tag
               </label>
               <input
                 id="postTag"

@@ -17,6 +17,7 @@ import PrivateRoute from "./PrivateRoute";
 import Membership from "../pages/membership/Membership";
 import AdminRoute from "./AdminRoute";
 import Payment from "../pages/membership/Payment";
+import CheckoutForm from "../pages/membership/CheckoutForm";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
       {
         path: "/payment",
         element: <Payment></Payment>,
+      },
+      {
+        path: "/checkout",
+        element: <CheckoutForm></CheckoutForm>,
       },
       {
         path: "/details/:id",

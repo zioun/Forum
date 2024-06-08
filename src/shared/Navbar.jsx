@@ -2,12 +2,25 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../providers/AuthProvider";
 import Notifications from "../components/Notifications";
+import useAxiosPublic from "../hooks/useAxiosPublic";
+import { useQuery } from "@tanstack/react-query";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const toggleOpenRef = useRef(null);
   const toggleCloseRef = useRef(null);
   const collapseMenuRef = useRef(null);
+
+  const axiosPublic = useAxiosPublic();
+  
+  const { data: admin, isPending: isAdminLoading } = useQuery({
+    queryKey: [user?.email, "admin"],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/users/${user.email}`);
+      return res.data.role === "admin";
+    },
+  });
 
   useEffect(() => {
     const handleClick = () => {
@@ -137,14 +150,22 @@ const Navbar = () => {
                 </a>
 
                 <hr class="border-gray-200 dark:border-gray-700 " />
-                <Link to={"/dashboard"}>
+                {!admin ? (<><Link to={"/dashboard/my-profile"}>
                   <span
                     href="#"
                     class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     Dashboard
                   </span>
-                </Link>
+                </Link></>) :(<><Link to={"/dashboard/admin-profile"}>
+                  <span
+                    href="#"
+                    class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+                  >
+                    Dashboard
+                  </span>
+                </Link></>)}
+                
 
                 <hr class="border-gray-200 dark:border-gray-700 " />
 
