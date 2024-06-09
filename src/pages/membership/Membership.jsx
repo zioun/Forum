@@ -17,9 +17,9 @@ const Membership = () => {
 
   const hasPaid = userData.some((item) => item.email === user?.email);
   return (
-    <div>
+    <div className="px-3">
       {!hasPaid ? (
-        <div className="flex justify-center mt-20">
+        <div className="flex justify-center my-40">
           <div class="w-full border max-w-md px-8 py-4 mt-16 bg-white rounded-lg shadow-lg dark:bg-gray-800">
             <div class="flex justify-center -mt-16 md:justify-end ">
               <img
@@ -55,7 +55,7 @@ const Membership = () => {
           </div>
         </div>
       ) : (
-        <div className="flex justify-center mt-20">
+        <div className="flex justify-center my-40">
           <div class="w-full border max-w-md px-8 py-4 mt-16 bg-white rounded-lg shadow-lg dark:bg-gray-800">
             <div class="flex justify-center -mt-16 md:justify-end ">
               <img

@@ -9,9 +9,9 @@ import "./pagination.css";
 const Home = () => {
   const axiosPublic = useAxiosPublic();
 
-  // get tags
-  const { data: tags = [] } = useQuery({
-    queryKey: ["tags"],
+  // get categorys
+  const { data: categorys = [] } = useQuery({
+    queryKey: ["categorys"],
     queryFn: async () => {
       const { data } = await axiosPublic.get(`http://localhost:5000/tags`);
       return data;
@@ -27,18 +27,28 @@ const Home = () => {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 5;
 
   useEffect(() => {
-    setFilteredPosts(
-      getPost.filter((post) =>
+    let posts = getPost;
+
+    if (searchQuery) {
+      posts = posts.filter((post) =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
+      );
+    }
+    if (filterQuery) {
+      posts = posts.filter((post) =>
+        post.category.toLowerCase().includes(filterQuery.toLowerCase())
+      );
+    }
+
+    setFilteredPosts(posts);
     setCurrentPage(0); // Reset to the first page after filtering
-  }, [searchQuery, getPost]);
+  }, [searchQuery, filterQuery, getPost]);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -46,6 +56,10 @@ const Home = () => {
 
   const handlePageClick = (data) => {
     setCurrentPage(data.selected);
+  };
+
+  const handleTagClick = (tag) => {
+    setFilterQuery(tag);
   };
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
@@ -56,8 +70,8 @@ const Home = () => {
   return (
     <div>
       <div className="relative bg-[#f8f9ff]">
-        <div className="px-4 sm:px-10">
-          <div className="pt-16 max-w-4xl mx-auto text-center relative z-10">
+        <div className="px-4 sm:px-10 mb-10">
+          <div className="pt-16 max-w-4xl mx-auto text-center relative z-10 pb-10">
             <h1 className="md:text-6xl text-4xl font-extrabold mb-6 md:!leading-[75px]">
               Build Landing Pages with Typeform Integration
             </h1>
@@ -78,11 +92,23 @@ const Home = () => {
                 type="button"
                 className="bg-cyan-900 hover:bg-cyan-800 transition-all text-white rounded-full px-3 py-3"
               >
-                search
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
+                </svg>
               </button>
             </div>
           </div>
-          <hr className="my-12 border-gray-300" />
         </div>
         <img
           src="https://readymadeui.com/bg-effect.svg"
@@ -90,8 +116,8 @@ const Home = () => {
           alt="background-effect"
         />
       </div>
-      <div className="flex gap-10 px-20">
-        <div>
+      <div className="container flex m-auto gap-10 px-3">
+        <div className="hidden lg:block">
           <aside
             className="flex flex-col w-64 sticky top-5 px-4 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700 rounded-xl"
             style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}
@@ -99,16 +125,19 @@ const Home = () => {
             <div className="flex flex-col justify-between flex-1 mt-2">
               <nav>
                 <a
-                  className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200"
+                  onClick={() => handlePopularPost(filterVoteByThousand)}
+                  className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200 justify-center"
                   href="#"
                 >
                   <img src="https://i.ibb.co/vYgj36c/popularity.png" alt="" />
                   <span className="mx-4 font-medium">Popularity</span>
                 </a>
                 <hr className="my-3 border-gray-200 dark:border-gray-600" />
-                {tags.map((tag) => (
+                {categorys.map((category) => (
                   <a
-                    className="flex items-center px-4 py-2 mt-2 text-gray-600 transition-colors duration-300 transform rounded-md dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+                    key={category._id}
+                    onClick={() => handleTagClick(category.tag)}
+                    className={`flex items-center px-4 py-2 mt-2 text-gray-600 transition-colors duration-300 transform rounded-md dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700`}
                     href="#"
                   >
                     <div className="w-[20px]">
@@ -118,15 +147,17 @@ const Home = () => {
                         alt=""
                       />
                     </div>
-                    <span className="mx-1 font-medium ml-3">{tag.tag}</span>
+                    <span className="mx-1 font-medium ml-3">
+                      {category.tag}
+                    </span>
                   </a>
                 ))}
               </nav>
             </div>
           </aside>
         </div>
-        <div className="px-20 w-full">
-          <div className="border-t mb-5">
+        <div className="w-full">
+          <div className="mb-5 flex flex-col gap-3 w-full">
             {currentItems.length === 0 ? (
               <div className="flex justify-center">
                 <img
@@ -141,15 +172,15 @@ const Home = () => {
               ))
             )}
           </div>
-          <div className="flex justify-between items-center pb-5">
+          <div className="md:flex justify-between items-center pb-5">
             <span>
               Showing {indexOfFirstItem + 1}-
               {Math.min(indexOfLastItem, filteredPosts.length)} of{" "}
               {filteredPosts.length}
             </span>
             <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
+              previousLabel={"<"}
+              nextLabel={">"}
               breakLabel={"..."}
               breakClassName={"break-me"}
               pageCount={pageCount}

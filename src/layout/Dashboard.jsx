@@ -2,12 +2,12 @@ import React, { useContext } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { AuthContext } from "../providers/AuthProvider";
 import useAxiosPublic from "./../hooks/useAxiosPublic";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
   const { user, logOut } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
-  
+
   const { data: admin, isPending: isAdminLoading } = useQuery({
     queryKey: [user?.email, "admin"],
     enabled: !!user?.email,

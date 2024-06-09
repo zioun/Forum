@@ -76,20 +76,31 @@ const Notifications = () => {
           <div className="flex">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="relative z-10 block text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none"
+              className="relative z-10 block text-gray-700 border border-transparent rounded-md focus:outline-none"
             >
-              Notifications
+              <div className="indicator">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+                <span className="w-[20px] text-[12px] rounded-full text-white bg-[#155E75] indicator-item">{announcements.length - notifications.length}</span>
+              </div>
             </button>
-            {/* Display the notification count */}
-            <div className="text-white p-1 bg-[#155E75]">
-              {/* Calculate the difference between total announcements and user-specific notifications */}
-              {announcements.length - notifications.length}
-            </div>
           </div>
 
           {/* Dropdown menu */}
           {isOpen && (
-            <div className="absolute right-0 z-20 w-64 mt-2 overflow-hidden origin-top-right bg-white rounded-md shadow-lg sm:w-80 dark:bg-gray-800 border">
+            <div className="absolute flex right-0 z-20 w-64 mt-2 overflow-hidden origin-top-right bg-white rounded-md shadow-lg sm:w-80 dark:bg-gray-800 border">
               <div className="py-2 max-h-[230px] overflow-y-auto overflow-x-hidden">
                 {announcements.map((announce) => (
                   <div

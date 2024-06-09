@@ -91,7 +91,7 @@ const Navbar = () => {
                 />
               </a>
             </li>
-            <li className="max-lg:border-b max-lg:py-3 px-3">
+            <li className="max-lg:border-b max-lg:py-3 px-3 flex justify-end">
               <span
                 href="#"
                 className="hover:text-blue-600 text-blue-600 block font-semibold transition-all"
@@ -99,7 +99,7 @@ const Navbar = () => {
                 <Link to={"/"}>Home</Link>
               </span>
             </li>
-            <li className="max-lg:border-b max-lg:py-3 px-3">
+            <li className="max-lg:border-b max-lg:py-3 px-3 flex justify-end">
               <a
                 href="#"
                 className="hover:text-blue-600 block font-semibold transition-all"
@@ -108,7 +108,7 @@ const Navbar = () => {
               </a>
             </li>
 
-            <li className="max-lg:border-b max-lg:py-3 px-3">
+            <li className="max-lg:border-b max-lg:py-3 px-3 flex justify-end">
               {user && <Notifications></Notifications>}
             </li>
           </ul>
