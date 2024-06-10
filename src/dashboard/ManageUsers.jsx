@@ -189,11 +189,11 @@ const ManageUsers = () => {
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-800">
-                    <span className="badge bg-red-100 text-red-600">
+                    <span className="">
                       {user.subscription === "true" ? (
-                        <p>Subscribe</p>
+                        <p className="badge bg-green-100 text-green-600" >Subscribed</p>
                       ) : (
-                        <p>Unsubscribe</p>
+                        <p className="badge bg-red-100 text-red-600">Unsubscribe</p>
                       )}
                     </span>
                   </td>

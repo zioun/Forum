@@ -40,7 +40,7 @@ const PostItem = ({ getPost }) => {
   const filteredComments =
     comments && comments.filter((comment) => comment.postId === _id);
 
-  const shareUrl = `${window.location.origin}/details/${_id}`;
+  const shareUrl = `https://forum-b54c7.web.app/details/${_id}`;
   const shareTitle = title;
 
   const fetchVotes = async () => {
@@ -89,9 +89,9 @@ const PostItem = ({ getPost }) => {
     <div className="px-3 md:px-10 w-full py-5 md:py-10 rounded-2xl bg-[#F8F9FF] hover:bg-[#F8F9FF]">
       <Link to={`/details/${_id}`}>
         <div className="flex gap-3 items-center">
-          <div className="w-10">
+          <div className="">
             <img
-              className="rounded-full"
+              className="rounded-full object-cover w-10 h-10"
               src={author?.photo}
               alt={author?.name}
             />
@@ -232,21 +232,6 @@ const PostItem = ({ getPost }) => {
           )}
         </div>
         </Link>
-        <div className="object-cover w-5">
-          {award == "gold" ? (
-            <img
-              className="w-full"
-              src="https://i.ibb.co/ZmvjVWS/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-3-removebg-previe.png"
-              alt=""
-            />
-          ) : (
-            <img
-              className="w-full"
-              src="https://i.ibb.co/MDks0zR/gold-silver-bronze-medal-badge-and-trophy-with-red-ribbon-flat-illustration-vector-2-removebg-previe.png"
-              alt=""
-            />
-          )}
-        </div>
         <div className="dropdown">
           <div
             tabIndex={0}

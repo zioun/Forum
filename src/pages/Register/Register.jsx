@@ -5,10 +5,12 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const { createUser, updateUserProfile, user, setUser } = useContext(AuthContext);
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
@@ -37,7 +39,7 @@ const Register = () => {
       };
 
       try {
-        await axios.post(`http://localhost:5000/users`, postData);
+        await axiosPublic.post(`/users`, postData);
         reset();
       } catch (err) {
         console.error(err);

@@ -14,7 +14,7 @@ const Home = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(`http://localhost:5000/tags`);
+      const { data } = await axiosPublic.get(`/tags`);
       return data;
     },
   });
@@ -23,7 +23,7 @@ const Home = () => {
   const { data: getPost = [] } = useQuery({
     queryKey: ["getPost"],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(`http://localhost:5000/posts`);
+      const { data } = await axiosPublic.get(`/posts`);
       return data;
     },
   });
@@ -82,12 +82,10 @@ const Home = () => {
         <div className="px-4 sm:px-10 mb-10">
           <div className="pt-16 max-w-4xl mx-auto text-center relative z-10 pb-10">
             <h1 className="md:text-6xl text-4xl font-extrabold mb-6 md:!leading-[75px]">
-              Build Landing Pages with Typeform Integration
+            Barta Where Voices Connect, Ideas Flourish
             </h1>
             <p className="text-base">
-              Embark on a gastronomic journey with our curated dishes, delivered
-              promptly to your doorstep. Elevate your dining experience today.
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Join our thriving community for dynamic discussions on diverse topics. Share ideas, connect with like-minded individuals, and explore new perspectives. Start engaging conversations and broaden your horizons with us today!
             </p>
             <div className="bg-white mt-10 flex px-1 py-1.5 rounded-full shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] overflow-hidden">
               <input

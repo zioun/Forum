@@ -3,9 +3,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const PostTag = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
 
   const handlePost = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ const PostTag = () => {
       tag,
     };
     try {
-      const { data } = await axios.post(`http://localhost:5000/tags`, postData);
+      const { data } = await axiosPublic.post(`/tags`, postData);
       console.log(data);
       Swal.fire({
         title: "Success!",

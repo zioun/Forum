@@ -46,7 +46,7 @@ const AllComments = () => {
     queryKey: ["post", id],
     queryFn: async () => {
       const { data } = await axiosPublic.get(
-        `http://localhost:5000/posts/${id}`
+        `/posts/${id}`
       );
       console.log("Fetched post data:", data);
       return data;

@@ -22,7 +22,7 @@ const MyProfile = () => {
   const { data: posts = [] } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      const { data } = await axiosPublic.get(`http://localhost:5000/posts`);
+      const { data } = await axiosPublic.get(`/posts`);
       const filteredData = data.filter(
         (item) => item.author.email === user.email
       );

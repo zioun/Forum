@@ -4,9 +4,11 @@ import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const Announcement = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
 
   const handlePost = async (e) => {
     e.preventDefault();
@@ -27,8 +29,8 @@ const Announcement = () => {
       },
     };
     try {
-      const { data } = await axios.post(
-        `http://localhost:5000/announcement`,
+      const { data } = await axiosPublic.post(
+        `/announcement`,
         postData
       );
       console.log(data);

@@ -81,6 +81,9 @@ const CheckoutForm = () => {
         };
         const res = await axiosPublic.post("/payments", payment);
         console.log("payment saved", res);
+
+        // Patch request to update subscription status
+        await axiosPublic.patch(`/users/${user?.email}/subscription`);
         
       }
     }

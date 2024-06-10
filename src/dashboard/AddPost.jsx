@@ -80,8 +80,8 @@ const AddPost = () => {
     };
 
     try {
-      const { data } = await axios.post(
-        `http://localhost:5000/posts`,
+      const { data } = await axiosPublic.post(
+        `/posts`,
         postData
       );
       console.log(data);
@@ -109,13 +109,11 @@ const AddPost = () => {
         </h2>
 
         <form onSubmit={handlePost}>
-        {!hasPaid || userPosts.length < 5 && (<>
+      {hasPaid || userPosts.length < 5 ? (
+        <>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
-              <label
-                className="text-gray-700 dark:text-gray-200"
-                htmlFor="postTitle"
-              >
+              <label className="text-gray-700 dark:text-gray-200" htmlFor="postTitle">
                 Post Title
               </label>
               <input
@@ -128,10 +126,7 @@ const AddPost = () => {
             </div>
 
             <div>
-              <label
-                className="text-gray-700 dark:text-gray-200"
-                htmlFor="postCategory"
-              >
+              <label className="text-gray-700 dark:text-gray-200" htmlFor="postCategory">
                 Post Category
               </label>
               <select
@@ -151,10 +146,7 @@ const AddPost = () => {
           </div>
 
           <div className="mt-4">
-            <label
-              className="text-gray-700 dark:text-gray-200"
-              htmlFor="postContent"
-            >
+            <label className="text-gray-700 dark:text-gray-200" htmlFor="postContent">
               Description
             </label>
             <textarea
@@ -164,25 +156,32 @@ const AddPost = () => {
               className="block w-full px-4 py-3 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring h-32"
             />
           </div>
-          </>)}
-        
-          <div className="flex justify-end mt-6">
-            {hasPaid || userPosts.length < 5 ? (
-              <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
-                Post
-              </button>
-            ) : (
-              <Link to="/membership">
-                <span
-                  className="tooltip px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
-                  data-tip="You have reached the limit of posts you can add."
-                >
-                  Become a Member
-                </span>
-              </Link>
-            )}
-          </div>
-        </form>
+        </>
+      ) : (
+        <div className="mt-4">
+          <p className="text-gray-700 dark:text-gray-200">
+            You have reached the limit of posts you can add. Become a member to add more posts.
+          </p>
+        </div>
+      )}
+
+      <div className="flex justify-end mt-6">
+        {hasPaid || userPosts.length < 5 ? (
+          <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
+            Post
+          </button>
+        ) : (
+          <Link to="/membership">
+            <span
+              className="tooltip px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
+              data-tip="You have reached the limit of posts you can add."
+            >
+              Become a Member
+            </span>
+          </Link>
+        )}
+      </div>
+    </form>
       </section>
     </div>
   );

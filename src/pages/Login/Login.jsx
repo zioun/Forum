@@ -5,11 +5,13 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { signIn, googleSignIn, user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
 
   const {
     register,
@@ -29,8 +31,8 @@ const Login = () => {
       const signedInUser = result.user;
 
       // Check if the user exists in the database
-      const response = await axios.get(
-        `http://localhost:5000/users?email=${signedInUser.email}`
+      const response = await axiosPublic.get(
+        `/users?email=${signedInUser.email}`
       );
 
       // Assuming response.data is an array of users
@@ -44,8 +46,8 @@ const Login = () => {
           subscription: "false",
           restriction: "no",
         };
-        const { data } = await axios.post(
-          `http://localhost:5000/users`,
+        const { data } = await axiosPublic.post(
+          `/users`,
           postData
         );
         console.log(data);

@@ -20,7 +20,10 @@ const Notifications = () => {
     queryFn: async () => {
       const { data } = await axiosPublic.get(`/announcement`);
       console.log("Fetched announcement data:", data);
-      return data;
+      // Sort announcements by date (newest to oldest)
+      const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      console.log("Sorted announcement data:", sortedData);
+      return sortedData;
     },
   });
 

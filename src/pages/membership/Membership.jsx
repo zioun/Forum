@@ -32,14 +32,11 @@ const Membership = () => {
             </div>
 
             <h2 class="mt-2 text-xl font-semibold text-gray-800 dark:text-white md:mt-0">
-              Premium Subscription
+              Premium Subscription $10
             </h2>
 
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-200">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae
-              dolores deserunt ea doloremque natus error, rerum quas odio
-              quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus
-              consequuntur!
+            Could you provide more details about your subscription service? For example, what does it offer, who is it for, and any key features or benefits? The more details you provide, the better I can tailor the description.
             </p>
 
             <div class="flex justify-end mt-4">
