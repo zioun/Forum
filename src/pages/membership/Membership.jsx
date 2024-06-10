@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { Helmet } from "react-helmet";
 
 const Membership = () => {
   const { user } = useContext(AuthContext);
@@ -18,6 +19,7 @@ const Membership = () => {
   const hasPaid = userData.some((item) => item.email === user?.email);
   return (
     <div className="px-3">
+      <Helmet><title>Barta - Membership</title></Helmet>
       {!hasPaid ? (
         <div className="flex justify-center my-40">
           <div class="w-full border max-w-md px-8 py-4 mt-16 bg-white rounded-lg shadow-lg dark:bg-gray-800">

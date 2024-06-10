@@ -5,19 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../../hooks/useAxiosPublic";
 import ReactPaginate from "react-paginate";
 import "./pagination.css";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const axiosPublic = useAxiosPublic();
 
-  // get categorys
-  const { data: categorys = [] } = useQuery({
-    queryKey: ["categorys"],
+  // Get categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
     queryFn: async () => {
       const { data } = await axiosPublic.get(`http://localhost:5000/tags`);
       return data;
     },
   });
 
+  // Get posts
   const { data: getPost = [] } = useQuery({
     queryKey: ["getPost"],
     queryFn: async () => {
@@ -33,13 +35,17 @@ const Home = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    let posts = getPost;
+    let posts = [...getPost];
+
+    // Sort posts by date in descending order
+    posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (searchQuery) {
       posts = posts.filter((post) =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
     if (filterQuery) {
       posts = posts.filter((post) =>
         post.category.toLowerCase().includes(filterQuery.toLowerCase())
@@ -69,6 +75,9 @@ const Home = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Barta - Home</title>
+      </Helmet>
       <div className="relative bg-[#f8f9ff]">
         <div className="px-4 sm:px-10 mb-10">
           <div className="pt-16 max-w-4xl mx-auto text-center relative z-10 pb-10">
@@ -133,7 +142,7 @@ const Home = () => {
                   <span className="mx-4 font-medium">Popularity</span>
                 </a>
                 <hr className="my-3 border-gray-200 dark:border-gray-600" />
-                {categorys.map((category) => (
+                {categories.map((category) => (
                   <a
                     key={category._id}
                     onClick={() => handleTagClick(category.tag)}

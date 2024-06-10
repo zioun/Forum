@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { AuthContext } from "../../providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet";
 
 const CheckoutForm = () => {
   const { user } = useContext(AuthContext);
@@ -87,6 +88,7 @@ const CheckoutForm = () => {
 
   return (
     <div>
+      <Helmet><title>Barta - Checkout</title></Helmet>
       {!hasPaid ? (
         <form onSubmit={handleSubmit} className="mt-5 pb-5">
           <CardElement

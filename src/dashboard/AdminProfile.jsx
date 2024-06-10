@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { AuthContext } from "../providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../hooks/useAxiosPublic";
+import { Helmet } from "react-helmet";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
@@ -72,7 +73,8 @@ const AdminProfile = () => {
 
   return (
     <div>
-      <div className="flex justify-center items-center mt-5 border shadow-md rounded-2xl">
+      <Helmet><title>Barta - Dashboard - Admin Profile</title></Helmet>
+      <div className="flex w-[250px] md:w-[500px] lg:w-[600px] xl:w-[800px] justify-center items-center mt-5 border shadow-md rounded-2xl">
         <div className=" bg-white rounded-lg dark:bg-gray-800 ">
           <div className="flex justify-center mt-5">
             <img
@@ -129,9 +131,9 @@ const AdminProfile = () => {
           </div>
         </div>
       </div>
-      <div className="flex gap-5 mt-10">
+      <div className="flex gap-5 mt-10 flex-wrap">
         <PostTag />
-        <div className=" rounded-lg border flex justify-center items-center shadow-md">
+        <div className=" rounded-lg border flex flex-col md:flex-row justify-center items-center shadow-md">
           <div className="w-[200px] h-[240px]">
             <ResponsiveContainer>
               <PieChart>

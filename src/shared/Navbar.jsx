@@ -12,7 +12,7 @@ const Navbar = () => {
   const collapseMenuRef = useRef(null);
 
   const axiosPublic = useAxiosPublic();
-  
+
   const { data: admin, isPending: isAdminLoading } = useQuery({
     queryKey: [user?.email, "admin"],
     enabled: !!user?.email,
@@ -47,13 +47,14 @@ const Navbar = () => {
   return (
     <header className="py-4 px-4 sm:px-10 z-50 min-h-[70px] bg-[#f8f9ff]">
       <div className="relative flex flex-wrap items-center gap-4">
-        <a href="#">
+        <div className="flex items-center gap-2">
           <img
-            src="https://readymadeui.com/readymadeui.svg"
+            src="https://i.ibb.co/hcmRW8M/Untitled-design.png"
             alt="logo"
-            className="w-36"
+            className="w-14"
           />
-        </a>
+          <h1 className="text-[25px] font-semibold">Barta</h1>
+        </div>
 
         <div
           id="collapseMenu"
@@ -125,9 +126,9 @@ const Navbar = () => {
                 <div className="w-10 rounded-full">
                   {
                     <img
-                    alt="Tailwind CSS Navbar component"
-                    src={user?.photoURL}
-                  />
+                      alt="Tailwind CSS Navbar component"
+                      src={user?.photoURL}
+                    />
                   }
                 </div>
               </div>
@@ -150,22 +151,29 @@ const Navbar = () => {
                 </a>
 
                 <hr class="border-gray-200 dark:border-gray-700 " />
-                {!admin ? (<><Link to={"/dashboard/my-profile"}>
-                  <span
-                    href="#"
-                    class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    Dashboard
-                  </span>
-                </Link></>) :(<><Link to={"/dashboard/admin-profile"}>
-                  <span
-                    href="#"
-                    class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    Dashboard
-                  </span>
-                </Link></>)}
-                
+                {!admin ? (
+                  <>
+                    <Link to={"/dashboard/my-profile"}>
+                      <span
+                        href="#"
+                        class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+                      >
+                        Dashboard
+                      </span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to={"/dashboard/admin-profile"}>
+                      <span
+                        href="#"
+                        class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+                      >
+                        Dashboard
+                      </span>
+                    </Link>
+                  </>
+                )}
 
                 <hr class="border-gray-200 dark:border-gray-700 " />
 

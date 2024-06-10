@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 
 const Login = () => {
   const location = useLocation();
@@ -84,6 +85,7 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)]">
+      <Helmet><title>Barta - Login</title></Helmet>
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg border">
         <div className="w-full px-6 py-8 md:px-8">
           <div className="">

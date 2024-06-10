@@ -12,6 +12,7 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import axios from "axios";
+import { Helmet } from 'react-helmet';
 
 const Details = () => {
   const { user } = useContext(AuthContext);
@@ -166,6 +167,7 @@ const Details = () => {
 
   return (
     <div>
+      <Helmet><title>Barta - Details</title></Helmet>
       <div className="flex gap-10 px-3 mt-10">
         <div className="container m-auto">
           <div className="mb-5">

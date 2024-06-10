@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import toast, { Toaster } from "react-hot-toast";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import { AuthContext } from "../providers/AuthProvider";
+import { Helmet } from "react-helmet";
 
 const AllComments = () => {
   const { user } = useContext(AuthContext);
@@ -107,9 +108,10 @@ const AllComments = () => {
 
   return (
     <div>
+      <Helmet><title>Barta - Dashboard - All comments</title></Helmet>
       <Toaster />
       <div className="mt-5">
-        <div className="max-w-[1000px] px-8 py-4 bg-white rounded-lg shadow-md dark:bg-gray-800 border relative">
+        <div className="w-[250px] md:w-[500px] lg:w-[600px] xl:w-[800px] px-8 py-4 bg-white rounded-lg shadow-md dark:bg-gray-800 border relative">
           <div className="font-sans overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-100 whitespace-nowrap">
@@ -192,8 +194,9 @@ const AllComments = () => {
                         <option value={""} disabled>
                           Feedback
                         </option>
-                        <option value="Han Solo">Han Solo</option>
-                        <option value="Greedo">Greedo</option>
+                        <option value="Inappropriate Content">Inappropriate Content</option>
+                        <option value="Spam">Spam</option>
+                        <option value="Harassment">Harassment</option>
                       </select>
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-800">

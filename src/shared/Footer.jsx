@@ -1,47 +1,46 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../providers/AuthProvider";
 
 const Footer = () => {
+  const { user } = useContext(AuthContext);
   return (
     <footer class="bg-[#F6F8F9] mt-20 p-10 font-[sans-serif] tracking-wide">
       <div class="md:flex md:-mx-3 md:items-center md:justify-between">
-        <h1 class="text-xl font-semibold tracking-tight text-gray-800 md:mx-3 xl:text-2xl dark:text-white">
-          Subscribe our newsletter to get update.
-        </h1>
-
         <div class="mt-6 md:mx-3 shrink-0 md:mt-0 md:w-auto">
-          <a
-            href="#"
-            class="inline-flex items-center justify-center w-full px-4 py-2 text-sm text-white duration-300 bg-cyan-800 rounded-lg gap-x-3 hover:bg-cyan-700 focus:ring focus:ring-gray-300 focus:ring-opacity-80"
-          >
-            <span>Sign Up Now</span>
+          {!user && (
+            <Link to={"/login"}>
+              <span class="inline-flex items-center justify-center w-full px-4 py-2 text-sm text-white duration-300 bg-cyan-800 rounded-lg gap-x-3 hover:bg-cyan-700 focus:ring focus:ring-gray-300 focus:ring-opacity-80">
+                <span>Sign Up Now</span>
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-              />
-            </svg>
-          </a>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                  />
+                </svg>
+              </span>
+            </Link>
+          )}
         </div>
       </div>
       <hr className="my-10" />
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div class="lg:flex lg:items-center">
-          <a href="javascript:void(0)">
-            <img
-              src="https://readymadeui.com/readymadeui-light.svg"
-              alt="logo"
-              class="w-52"
-            />
-          </a>
+        <div className="flex items-center gap-2">
+          <img
+            src="https://i.ibb.co/hcmRW8M/Untitled-design.png"
+            alt="logo"
+            className="w-14"
+          />
+          <h1 className="text-[25px] font-semibold">Barta</h1>
         </div>
 
         <div class="lg:flex lg:items-center">
@@ -87,7 +86,8 @@ const Footer = () => {
                 href="javascript:void(0)"
                 class="text-dark-300 hover:text-dark text-sm"
               >
-                Email
+                Email :{" "}
+                <span className="text-gray-500">jionkhan0@gmail.com</span>
               </a>
             </li>
             <li>
@@ -95,7 +95,7 @@ const Footer = () => {
                 href="javascript:void(0)"
                 class="text-dark-300 hover:text-dark text-sm"
               >
-                Phone
+                Phone : <span className="text-gray-500">+880 1619971997</span>
               </a>
             </li>
             <li>
@@ -103,7 +103,8 @@ const Footer = () => {
                 href="javascript:void(0)"
                 class="text-dark-300 hover:text-dark text-sm"
               >
-                Address
+                Address :{" "}
+                <span className="text-gray-500">Dhaka, Bangladesh</span>
               </a>
             </li>
           </ul>
@@ -117,7 +118,7 @@ const Footer = () => {
                 href="javascript:void(0)"
                 class="text-dark-300 hover:text-dark text-sm"
               >
-                About Us
+                Membership
               </a>
             </li>
             <li>
@@ -125,7 +126,7 @@ const Footer = () => {
                 href="javascript:void(0)"
                 class="text-dark-300 hover:text-dark text-sm"
               >
-                Terms &amp; Conditions
+                Dashboard
               </a>
             </li>
             <li>
@@ -141,13 +142,13 @@ const Footer = () => {
       </div>
       <hr className="my-10 text-center" />
       <p class="text-dark-300 text-center text-sm mt-10">
-        © 2023
+        © 2024
         <a
           href="https://readymadeui.com/"
           target="_blank"
           class="hover:underline mx-1"
         >
-          ReadymadeUI
+          Barta
         </a>
         All Rights Reserved.
       </p>

@@ -18,11 +18,13 @@ import Membership from "../pages/membership/Membership";
 import AdminRoute from "./AdminRoute";
 import Payment from "../pages/membership/Payment";
 import CheckoutForm from "../pages/membership/CheckoutForm";
+import ErrorPage from "../pages/404/ErrorPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Root></Root>,
+    errorElement: <ErrorPage/>,
     children: [
       {
         path: "/",
@@ -30,7 +32,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/membership",
-        element: <Membership></Membership>,
+        element: <PrivateRoute><Membership></Membership></PrivateRoute>,
       },
       {
         path: "/payment",
@@ -57,6 +59,7 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+    errorElement: <ErrorPage/>,
     children: [
       {
         path: "my-profile",

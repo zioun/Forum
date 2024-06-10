@@ -120,7 +120,7 @@ const PostItem = ({ getPost }) => {
       </Link>
       {/* bottom function */}
       <div className="mt-7 flex gap-3">
-        <div className="flex gap-1 bg-[#E7EDFF] p-1 px-3 rounded-full">
+        {user?(<div className="flex gap-1 bg-[#E7EDFF] p-1 px-3 rounded-full">
           <button
             onClick={(e) => handleVote(e, true)}
             className={`hover:text-[#D93900] ${activeUp ? "text-red-500" : ""}`}
@@ -163,7 +163,49 @@ const PostItem = ({ getPost }) => {
             </svg>
           </button>
           {/* <h4>{downVotes}</h4> */}
-        </div>
+        </div>):(<Link to="/login"><div className="flex gap-1 bg-[#E7EDFF] p-1 px-3 rounded-full">
+          <button 
+            className={`hover:text-[#D93900] ${activeUp ? "text-red-500" : ""}`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"
+              />
+            </svg>
+          </button>
+          <h4>{upVotes}</h4>
+          <button
+            className={`hover:text-[#6A5CFF] ${
+              activeDown ? "text-blue-500" : ""
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </button>
+          {/* <h4>{downVotes}</h4> */}
+        </div></Link>)}
+        <Link to={`/details/${_id}`}>
         <div className="flex gap-3 bg-[#E7EDFF] p-1 px-3 rounded-full cursor-pointer">
           {commentsLoading ? (
             <span>Loading comments...</span>
@@ -189,6 +231,7 @@ const PostItem = ({ getPost }) => {
             </div>
           )}
         </div>
+        </Link>
         <div className="object-cover w-5">
           {award == "gold" ? (
             <img

@@ -31,7 +31,7 @@ const PostTag = () => {
     }
   };
   return (
-    <div>
+    <div className="w-[300px]">
       <Toaster />
       <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 border">
         <h2 className="text-lg font-semibold text-gray-700  dark:text-white">
@@ -40,7 +40,7 @@ const PostTag = () => {
 
         <form onSubmit={handlePost}>
           <div className="w-[455px]">
-            <div className="w-full mt-5">
+            <div className="w-full mt-5 flex flex-col">
               <label className="text-gray-700 dark:text-gray-200" htmlFor="tag">
                 Enter Tag
               </label>
@@ -49,7 +49,7 @@ const PostTag = () => {
                 name="tag"
                 type="text"
                 placeholder="Type tag"
-                className="inline-block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring h-[47px]"
+                className="inline-block w-[200px] px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring h-[47px]"
               />
             </div>
           </div>
