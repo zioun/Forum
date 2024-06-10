@@ -67,6 +67,7 @@ const Home = () => {
   const handleTagClick = (tag) => {
     setFilterQuery(tag);
   };
+  
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = currentPage * itemsPerPage;
