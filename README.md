@@ -8,6 +8,9 @@ Welcome to Barta! This platform allows users to create, share, and interact with
 
 [Visit MyWebsite](https://forum-b54c7.web.app/)
 
+- **Username:** zioun@gmail.com
+- **Password:** Ab123456#
+
 ## Features
 
 1. **Responsive Design**: The website is fully responsive and adapts seamlessly to mobile, tablet, and desktop views. The dashboard is also optimized for different devices.
