@@ -77,5 +77,6 @@ Welcome to Barta! This platform allows users to create, share, and interact with
 10. Built API for comment reporting and feedback.
 11. Implemented admin actions for reported comments.
 12. Set up environment variables for secure credential storage.
+[Visit Barta Server Site](https://github.com/Zioun/Assignment-12-Server)
 
 Thank you for exploring MyWebsite! We hope you enjoy using it as much as we enjoyed building it.
